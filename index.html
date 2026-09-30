@@ -1,1 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vladskuy Tools</title>
+<style>
+  :root {
+    --bg: #0f1b2d;
+    --surface: #182a44;
+    --text: #eef3f8;
+    --muted: #9fb3cc;
+    --accent: #ff5c8a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    padding: 32px 20px 48px;
+  }
+  main { max-width: 520px; margin: 0 auto; }
+  h1 { font-size: 2.1rem; line-height: 1.15; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .tool {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    background: var(--surface);
+    border-left: 4px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .tool strong { display: block; font-size: 1.05rem; }
+  .tool span { color: var(--muted); font-size: 0.9rem; }
+  .tool:hover, .tool:focus-visible { background: #21395c; outline: none; }
+  .tool:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  .new { color: var(--accent); font-weight: 700; font-size: 0.8rem; margin-left: 6px; }
+  footer { color: var(--muted); font-size: 0.8rem; margin-top: 28px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Vladskuy Tools</h1>
+  <p class="sub">Pilih tool, ikuti langkahnya, langsung jadi.</p>
 
+  <!-- Ganti nama, deskripsi, dan href="#" dengan link Gemini kamu -->
+  <a class="tool" href="#">
+    <strong>Drama Pendek</strong>
+    <span>Bikin skrip drama pendek per adegan.</span>
+  </a>
+
+  <a class="tool" href="#">
+    <strong>Music Clip</strong>
+    <span>Susun ide dan adegan untuk klip musik.</span>
+  </a>
+
+  <a class="tool" href="#">
+    <strong>Podcast Studio <em class="new">BARU</em></strong>
+    <span>Buat naskah dan alur podcast.</span>
+  </a>
+
+  <a class="tool" href="#">
+    <strong>Image Generator</strong>
+    <span>Bikin prompt gambar yang siap pakai.</span>
+  </a>
+
+  <a class="tool" href="#">
+    <strong>Prompt Siap Pakai</strong>
+    <span>Kumpulan prompt tinggal salin.</span>
+  </a>
+
+  <a class="tool" href="#">
+    <strong>Meta Ads</strong>
+    <span>Tulis materi iklan untuk Facebook dan Instagram.</span>
+  </a>
+
+  <footer>Dibuat oleh vladskuy-glitch</footer>
+</main>
+</body>
+</html>
