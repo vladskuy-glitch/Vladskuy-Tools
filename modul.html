@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#020203">
+<title>Modul | VB Vladskuy Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">&lsaquo; Kembali ke beranda</a>
+  <div class="mh"><small id="no"></small><h1 id="nm"></h1><p id="gn"></p></div>
+  <div id="list"></div>
+  <footer>VB &middot; AI CONTENT SUITE</footer>
+</main>
+<script src="data.js"></script>
+<script src="bg.js"></script>
+<script>
+const idx = parseInt(new URLSearchParams(location.search).get("m"), 10) - 1;
+const m = MODULES[idx];
+if (!m) { location.replace("index.html"); }
+else {
+  document.title = m.nama + " | VB Vladskuy Tools";
+  document.getElementById("no").textContent = "MODUL " + m.no;
+  document.getElementById("nm").textContent = m.nama;
+  document.getElementById("gn").textContent = m.guna;
+  m.items.forEach((t, i) => {
+    const ready = !!t.link;
+    const el = document.createElement(ready ? "a" : "div");
+    el.className = "row" + (ready ? "" : " soon");
+    el.style.setProperty("--i", i);
+    if (ready) el.href = t.link;
+    el.innerHTML = '<div class="t"><strong></strong><span class="k"></span><span class="j"></span></div><span class="badge"></span>';
+    el.querySelector("strong").textContent = t.nama;
+    el.querySelector(".k").textContent = t.ket;
+    el.querySelector(".j").textContent = t.tipe === "C" ? "GEMINI CANVAS" : "WEB VB";
+    const b = el.querySelector(".badge");
+    b.textContent = ready ? "READY" : "SOON";
+    if (ready) b.classList.add("ok");
+    document.getElementById("list").appendChild(el);
+  });
+}
+</script>
+</body>
+</html>
