@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VB Character Generator V0.27</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --color-bg: #050507; --color-gold: #d4af37; --color-gold-hover: #f1cc55; --color-gold-dim: rgba(212, 175, 55, 0.2); --color-text: #ece6d6; --color-text-dim: #b0a996; --color-card-bg: rgba(8, 8, 10, 0.74); --color-input-bg: rgba(255, 255, 255, 0.05); }
+        body { background-color: var(--color-bg); color: var(--color-text); font-family: 'Inter', sans-serif; background-image: radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.03), transparent 25%), radial-gradient(circle at 85% 30%, rgba(212, 175, 55, 0.04), transparent 25%); background-attachment: fixed; min-height: 100vh; }
+        h1, h2, h3, .font-cinzel { font-family: 'Cinzel', serif; }
+        .gold-text { color: var(--color-gold); }
+        .gold-text-gradient { background: linear-gradient(45deg, #d4af37, #fdf0a6, #d4af37); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .glass-card { background: var(--color-card-bg); backdrop-filter: blur(10px); border: 1px solid var(--color-gold-dim); border-radius: 0.75rem; transition: all 0.3s ease; }
+        .glass-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 10px var(--color-gold-dim); border-color: rgba(212, 175, 55, 0.5); }
+        
+        .custom-input { background: var(--color-input-bg); border: 1px solid var(--color-gold-dim); color: var(--color-text); border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; transition: all 0.3s ease; appearance: none; }
+        .custom-input:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 8px var(--color-gold-dim); background: rgba(255, 255, 255, 0.1); }
+        .select-wrapper { position: relative; }
+        .select-wrapper::after { content: '\f107'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-gold); pointer-events: none; }
+        select option { background-color: var(--color-bg); color: var(--color-text); }
+        .btn-gold { background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(212, 175, 55, 0.2)); border: 1px solid var(--color-gold); color: var(--color-gold); padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-shadow: 0 0 5px rgba(212, 175, 55, 0.3); }
+        .btn-gold:hover { background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(212, 175, 55, 0.4)); color: #fff; box-shadow: 0 0 15px var(--color-gold-dim); text-shadow: 0 0 8px rgba(255, 255, 255, 0.5); }
+        .btn-gold:active { transform: scale(0.98); }
+        .btn-gold-solid { background: linear-gradient(135deg, #b89326, #d4af37, #b89326); border: none; color: #000; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .btn-gold-solid:hover { background: linear-gradient(135deg, #d4af37, #fdf0a6, #d4af37); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+        .btn-gold-solid:disabled { background: #555; color: #888; cursor: not-allowed; box-shadow: none; }
+        
+        .tab-btn { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--color-text-dim); padding: 0.75rem 1.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .tab-btn.active { color: var(--color-gold); border-bottom-color: var(--color-gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+        .tab-btn:hover:not(.active) { color: var(--color-text); }
+        .tab-content { display: none; animation: fadeIn 0.4s ease-in-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top: 3px solid var(--color-gold); width: 28px; height: 28px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .image-container { position: relative; width: 100%; background-color: rgba(0,0,0,0.5); border-radius: 0.5rem; overflow: hidden; border: 1px solid var(--color-gold-dim); display: flex; align-items: center; justify-content: center; min-height: 320px; }
+        #resultImage { max-width: 100%; max-height: 70vh; object-fit: contain; display: none; }
+        .placeholder-text { color: var(--color-text-dim); text-align: center; padding: 2rem; font-style: italic; }
+        .accordion-btn { width: 100%; text-align: left; background: var(--color-input-bg); border: 1px solid var(--color-gold-dim); color: var(--color-text); padding: 0.75rem 1rem; border-radius: 0.5rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.3s; }
+        .accordion-btn:hover { border-color: var(--color-gold); }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: rgba(0,0,0,0.3); border-radius: 0 0 0.5rem 0.5rem; margin-top: -0.25rem; border: 1px solid transparent; }
+        .accordion-content.expanded { max-height: 400px; overflow-y: auto; border-color: var(--color-gold-dim); border-top: none; padding: 1rem; margin-bottom: 1rem; }
+        .custom-radio { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.25rem 0; color: var(--color-text-dim); }
+        .custom-radio:hover { color: var(--color-text); }
+        .custom-radio input { accent-color: var(--color-gold); width: 1rem; height: 1rem; cursor: pointer; }
+        .section-title { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--color-gold-dim), transparent); }
+        .hide { display: none !important; }
+        
+        .chip-btn { background: var(--color-input-bg); border: 1px solid var(--color-gold-dim); color: var(--color-text-dim); padding: 0.6rem 1rem; border-radius: 0.5rem; text-align: left; transition: all 0.2s; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .chip-btn:hover { border-color: var(--color-gold); color: var(--color-text); background: rgba(212, 175, 55, 0.05); }
+        .chip-btn.active { background: rgba(212, 175, 55, 0.15); border-color: var(--color-gold); color: var(--color-gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        .chip-count { background: rgba(0,0,0,0.5); padding: 0.1rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; color: var(--color-text-dim); }
+        .chip-btn.active .chip-count { color: var(--color-bg); background: var(--color-gold); font-weight: bold; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--color-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--color-gold-dim); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-gold); }
+
+        .mixchip { background: var(--color-input-bg); border: 1px solid var(--color-gold-dim); color: var(--color-text-dim); padding: 0.6rem 0.8rem; border-radius: 0.5rem; text-align: left; transition: all 0.2s; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; width: 100%; cursor: pointer; }
+        .mixchip:hover:not(:disabled) { border-color: var(--color-gold); color: var(--color-text); background: rgba(212, 175, 55, 0.05); }
+        .mixchip.active { background: rgba(212, 175, 55, 0.15); border-color: var(--color-gold); color: var(--color-gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        .mixchip.has { border-color: var(--color-gold); }
+        .mixchip.soon, .mixchip:disabled { opacity: 0.4; cursor: not-allowed; }
+        .sec-toggle { cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; padding: 0.5rem 0.25rem; border-bottom: 1px solid var(--color-gold-dim); }
+        .sec-toggle .sec-chev { transition: transform 0.2s; font-size: 0.75rem; }
+        .sec-toggle.collapsed .sec-chev { transform: rotate(-90deg); }
+        .mixchip.active .chip-count { color: var(--color-bg); background: var(--color-gold); font-weight: bold; }
+
+        /* ===== HEADER PLAKAT + LIVE BACKGROUND ===== */
+        #vbBg { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: -1; display: block; pointer-events: none; }
+        .vb-plaque { position: relative; text-align: center; padding: 1.75rem 1.25rem 1.1rem; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 22px; background: rgba(0, 0, 0, 0.42); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); box-shadow: 0 0 34px rgba(0, 0, 0, 0.65), inset 0 0 30px rgba(212, 175, 55, 0.05); }
+        .vb-plaque::before { content: ""; position: absolute; inset: 8px; border: 1px solid rgba(212, 175, 55, 0.22); border-radius: 15px; pointer-events: none; }
+        .vb-logo { margin: 0 auto; line-height: 0; }
+        .vb-logo img { display: block; margin: 0 auto; height: 5.5rem; width: auto; filter: drop-shadow(0 0 10px rgba(240, 200, 90, 0.55)); }
+        .vb-divider { width: 6.5rem; height: 1px; margin: 1.1rem auto 1rem; background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.75), transparent); }
+        .vb-title { margin: 0; font-size: 1.5rem; line-height: 1.25; font-weight: 700; letter-spacing: 0.12em; color: #e8c765; text-transform: uppercase; text-shadow: 0 0 14px rgba(212, 175, 55, 0.35); }
+        .vb-tagline { margin: 0.55rem auto 0; max-width: 28rem; font-size: 0.9rem; font-style: italic; color: var(--color-text-dim); }
+        .vb-tagline span { display: block; }
+        .vb-amp { margin: 0.05rem 0; color: rgba(212, 175, 55, 0.85); font-style: normal; }
+        .vb-version { margin-top: 0.9rem; text-align: right; padding-right: 0.5rem; font-size: 0.65rem; letter-spacing: 0.12em; color: rgba(212, 175, 55, 0.7); }
+        @media (min-width: 1024px) { .vb-plaque { padding: 2.75rem 2rem 1.4rem; } .vb-logo img { height: 7.5rem; } .vb-title { font-size: 2.5rem; } .vb-tagline { font-size: 1.1rem; } }
+        @media (min-width: 640px) { .vb-plaque { padding: 2.25rem 2rem 1.25rem; } .vb-logo img { height: 6.5rem; } .vb-title { font-size: 2rem; } .vb-tagline { font-size: 1rem; } }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center">
+    <canvas id="vbBg" aria-hidden="true"></canvas>
+    <header class="w-full max-w-7xl mb-8 relative z-10">
+        <div class="vb-plaque">
+            <h1 class="vb-logo"><img src="gambar/logo.png" alt="VB" width="271" height="258"></h1>
+            <div class="vb-divider"></div>
+            <h2 class="vb-title font-cinzel">CHARACTER GENERATOR</h2>
+            <p class="vb-tagline"><span>Let's Roll Your Characters</span><span class="vb-amp">&amp;</span><span>Create Your Own Content Ideas</span></p>
+            <div class="vb-version">VB v1.0 Updated</div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+        <section class="lg:col-span-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-2">
+                <h3 class="font-cinzel text-xl gold-text uppercase tracking-widest flex items-center"><i class="fas fa-sliders-h mr-2"></i> Konfigurasi</h3>
+                
+                <div class="flex flex-col xl:flex-row xl:items-center gap-4 justify-between bg-gray-900 bg-opacity-50 p-3 rounded-lg border border-gray-700">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Acak Bagian Mana?</span>
+                        <div class="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+                            <label class="custom-radio"><input type="checkbox" id="rnd_identity" checked> <span class="ml-1">Identitas</span></label>
+                            <label class="custom-radio"><input type="checkbox" id="rnd_physical" checked> <span class="ml-1">Fisik</span></label>
+                            <label class="custom-radio"><input type="checkbox" id="rnd_hair" checked> <span class="ml-1">Rambut</span></label>
+                            <label class="custom-radio"><input type="checkbox" id="rnd_expression" checked> <span class="ml-1">Ekspresi</span></label>
+                            <label class="custom-radio"><input type="checkbox" id="rnd_outfit" checked> <span class="ml-1">Outfit</span></label>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" id="btnRandom" class="btn-gold !px-3 !py-2 text-sm" title="Acak Karakter Berdasarkan Centang"><i class="fas fa-dice mr-1"></i> Acak</button>
+                        <button type="button" id="btnReset" class="btn-gold !px-3 !py-2 text-sm !border-red-500 !text-red-400 hover:!bg-red-900 hover:!bg-opacity-40" title="Reset Semua Pilihan"><i class="fas fa-undo mr-1"></i> Reset</button>
+                        <button type="button" id="btnSavePreset" class="btn-gold !px-3 !py-2 text-sm" title="Simpan Preset"><i class="fas fa-save"></i></button>
+                        <button type="button" id="btnLoadPreset" class="btn-gold !px-3 !py-2 text-sm" title="Muat Preset"><i class="fas fa-folder-open"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <form id="characterForm" class="flex flex-col gap-4">
+                <div id="dynamicFormContainer" class="glass-card p-6 flex flex-col gap-4">
+                    <div id="enginePanel"></div>
+                    <div class="section-title text-sm font-cinzel text-gold mt-2">Identitas Karakter</div>
+                    <div id="identityPanel"></div>
+                    <div class="section-title text-sm font-cinzel text-gold">Penampilan & Properti</div>
+                    <div id="appearancePanel"></div>
+                </div>
+                
+                <div class="flex items-center justify-between bg-black bg-opacity-30 p-3 rounded-lg border border-gold-dim mt-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-shield-alt gold-text"></i>
+                        <span class="text-sm font-semibold text-gray-200">Mode ketat</span>
+                        <span class="text-xs text-gray-400 italic">(Membatasi pakaian & aksesoris tambahan)</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="strictMode" name="strictMode" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    </label>
+                </div>
+
+                <div class="flex items-center justify-between bg-black bg-opacity-30 p-3 rounded-lg border border-gold-dim mt-1">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-gem gold-text"></i>
+                        <span class="text-sm font-semibold text-gray-200">Tambah detail kualitas otomatis</span>
+                        <span class="text-xs text-gray-400 italic">(Kalimat kualitas tambahan)</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="qualityMode" name="qualityMode" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    </label>
+                </div>
+
+                <button type="submit" id="btnGenerate" class="btn-gold-solid w-full py-4 text-lg mt-2 shadow-lg"><i class="fas fa-magic"></i> Render Karakter</button>
+                <p id="engineNotice" class="text-xs text-center text-gray-500 italic mt-1"></p>
+            </form>
+        </section>
+
+        <section class="lg:col-span-6 flex flex-col gap-4">
+            <div class="glass-card flex flex-col h-full min-h-[600px] sticky top-8">
+                <div class="flex border-b border-gray-700" style="border-color: var(--color-gold-dim);">
+                    <button class="tab-btn active flex-1" data-tab="tab-image"><i class="fas fa-image mr-2"></i> Gambar</button>
+                    <button class="tab-btn flex-1" data-tab="tab-prompt"><i class="fas fa-terminal mr-2"></i> Prompt</button>
+                    <button class="tab-btn flex-1" data-tab="tab-json"><i class="fas fa-code mr-2"></i> JSON</button>
+                </div>
+                <div id="tab-image" class="tab-content active p-6 flex-1 flex flex-col items-center justify-center">
+                    <div id="imageStateEmpty" class="placeholder-text flex flex-col items-center gap-4 w-full h-full justify-center">
+                        <i class="fas fa-user-astronaut text-4xl mb-2" style="color: var(--color-gold-dim);"></i>
+                        <p>Karakter Anda akan muncul di sini.<br>Pilih parameter dan klik "Render Karakter".</p>
+                    </div>
+                    <div id="imageStateLoading" class="hide flex flex-col items-center justify-center gap-4 w-full h-full">
+                        <div class="loader"></div>
+                        <p class="gold-text animate-pulse">Merender Karakter...</p>
+                        <p class="text-xs text-gray-400 italic text-center max-w-xs">Proses AI membutuhkan waktu beberapa detik.</p>
+                    </div>
+                    <div id="imageStateError" class="hide flex flex-col items-center justify-center gap-4 w-full h-full text-center">
+                        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-2"></i>
+                        <p id="errorMessage" class="text-red-400 mb-4 text-sm max-w-md">Gagal menghasilkan gambar.</p>
+                        <button type="button" id="btnRetry" class="btn-gold">Coba Lagi</button>
+                    </div>
+                    <div id="imageStateResult" class="hide w-full h-full flex flex-col items-center justify-between">
+                        <div class="image-container flex-1 w-full mb-4 group relative"><img id="resultImage" src="" alt="Generated Character"></div>
+                        <div class="flex gap-4 w-full"><a id="btnDownload" href="#" download="VB_Character.png" class="btn-gold flex-1 text-center decoration-none"><i class="fas fa-download"></i> Unduh Gambar</a>
+                            <button type="button" id="btnRerender" class="btn-gold flex-1 text-center"><i class="fas fa-redo mr-1"></i> Render ulang</button></div>
+                    </div>
+                </div>
+                <div id="tab-prompt" class="tab-content p-6 flex-1 flex flex-col">
+                    <p class="text-sm text-gray-400 mb-4"><i class="fas fa-info-circle text-blue-400 mr-1"></i> Prompt akhir yang dikirim ke AI.</p>
+                    <div class="relative flex-1">
+                        <textarea id="promptText" class="custom-input w-full h-full resize-none font-mono text-sm leading-relaxed" readonly placeholder="Prompt akan muncul di sini..."></textarea>
+                        <button id="btnCopyPrompt" class="absolute top-2 right-2 btn-gold !p-2 !text-xs bg-opacity-90 backdrop-blur-sm" title="Salin Prompt"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <div id="tab-json" class="tab-content p-6 flex-1 flex flex-col">
+                    <p class="text-sm text-gray-400 mb-4"><i class="fas fa-info-circle text-blue-400 mr-1"></i> Data mentah konfigurasi karakter.</p>
+                    <div class="relative flex-1">
+                        <textarea id="jsonText" class="custom-input w-full h-full resize-none font-mono text-xs leading-relaxed" readonly placeholder="Data JSON akan muncul di sini..."></textarea>
+                        <button id="btnCopyJson" class="absolute top-2 right-2 btn-gold !p-2 !text-xs bg-opacity-90 backdrop-blur-sm" title="Salin JSON"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toastMessage" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-yellow-600 text-white px-6 py-3 rounded-full shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50 flex items-center gap-2"><i class="fas fa-info-circle"></i> <span id="toastText">Notifikasi</span></div>
+
+    <script src="vb-data.js"></script>
+    <script>
+
+        // ===== EKSTENSI V0.27: GAYA JORGEHDZY (BIOMECH / MECHA) - data lama tidak diubah, hanya ditambah =====
+        OPT.outfits["Biomech Hitam & Merah"] = [
+            "Bodysuit Biomech Hitam Merah|glossy black biomechanical bodysuit with glowing red seams, ribbed spine plates and spiked shoulder fins",
+            "Gaun Biomech Gothic|black gothic biomechanical gown with chrome ribcage corset and long flowing skirt|W",
+            "Zirah Tulang Rusuk Chrome|exposed chrome ribcage armor over a black latex bodysuit",
+            "Jubah Duri Chrome|black chrome armor with a long cape and thorn-like spikes",
+            "Gaun Tulang Putih Hitam|black and white gown with skeletal bone-like armor panels|W",
+            "Penguasa Sabit Bertanduk|dark biomech regalia with a horned crown helm and trailing cape",
+            "Vigilante Biomech Bertanduk|armored dark biomech suit with horned cowl and winged spiked shoulders|M",
+            "Kostum Cyborg Kabel Merah|black cyborg suit with red cables and glossy segmented plating"
+        ];
+        OPT.outfits["Mecha Armor Putih & Chrome"] = [
+            "Mecha Knight Putih Perak|white and silver mecha knight armor with glowing blue energy edges",
+            "Samurai Mecha Hitam|black mecha samurai armor worn over a hakama",
+            "Exo-Armor Neon Biru|dark exo-armor with glowing blue neon trim and layered armor plates",
+            "Armor Tempur Merah|heavy red combat mecha armor with a glowing red visor",
+            "Gaun Cyborg Putih|white cyborg gown with exposed spine and tubular cables|W",
+            "Zirah Insektoid|insectoid chitin exoskeleton armor with an antenna crest",
+            "Armor Kerajaan Alien Ungu|violet-blue glowing alien royal armor with curved horns",
+            "Penyihir Tentakel Perak|silver-grey robed mecha sorcerer with floating tentacle arms"
+        ];
+        OPT.mix.cats.push({ id: 'armor', label: 'Armor Biomech & Mecha' });
+        OPT.mix.items.armor = [
+            "Pelindung Bahu Duri|spiked pauldrons",
+            "Pelindung Bahu Bertanduk|horned shoulder armor",
+            "Pelat Dada Tulang Rusuk Chrome|chrome ribcage chest plate",
+            "Gorget Tulang Belakang|segmented vertebrae neck guard",
+            "Sarung Tangan Cakar|clawed armored gauntlets",
+            "Sirip Duri Punggung|spiked back fins",
+            "Greaves Kaki Mecha|mecha leg greaves",
+            "Corset Tulang Biomech|biomechanical bone corset|W",
+            "Zirah Penuh Mecha Putih|full white mecha armor",
+            "Zirah Penuh Hitam Chrome|full black chrome armor",
+            "Pelat Perut Tulang Belakang|exposed spine abdomen plating",
+            "Pelat Dada Reaktor|chest plate with glowing reactor core"
+        ];
+        OPT.mix.items.head.push("Helm Biomech Bertanduk|horned biomechanical helmet", "Helm Visor Merah|black helmet with red glowing visor", "Mahkota Duri Chrome|chrome crown of spikes", "Helm Tengkorak Putih|white skull-like mecha helmet", "Tudung Antena Insektoid|insectoid antenna crest hood");
+        OPT.mix.items.outer.push("Jubah Duri Biomech|long black cloak with spiked ribs", "Jubah Sayap Bilah|black robe with blade-like wing panels");
+        OPT.mix.items.shoes.push("Sepatu Cakar Mecha|mecha talon boots", "Sepatu Bot Chrome Duri|spiked chrome combat boots");
+
+        OPT.acc.weapon = [
+            "Sabit Tulang Belakang Raksasa|giant scythe with a segmented spine-bone blade and chrome vertebrae",
+            "Sabit Cincin Tulang Putih|oversized ring-shaped white bone scythe with mechanical vertebrae",
+            "Sabit Plasma Merah Api|burning red-orange plasma scythe",
+            "Pedang Cyber Raksasa Merah|oversized black cyber cleaver with glowing red digital readout",
+            "Pedang Gergaji Merah|giant chainsaw-style greatsword with glowing red teeth",
+            "Pedang Energi Biru Panjang|long blade with a glowing blue energy edge",
+            "Katana Bilah Merah Menyala|katana with a glowing red edge",
+            "Kapak Perang Bulan Sabit Neon|double-bladed war axe with glowing neon crescent blades",
+            "Glaive Sabit Alien|alien glaive with a curved chrome blade",
+            "Sabit Kembar|twin curved sickle blades",
+            "Meriam Bilah Dua Tangan|two-handed blade-cannon hybrid weapon",
+            "Tombak Dua Ujung Kristal|double-ended spear with a violet crystal tip"
+        ];
+        OPT.acc.beast = [
+            "Naga Chrome Hitam|black chrome mecha dragon with ribbed spines standing beside the character",
+            "Elang Raksasa Chrome|giant chrome mecha eagle perched nearby",
+            "Griffin Mecha|chrome mecha griffin with a long segmented tail",
+            "Buaya Biomech|biomechanical crocodile with chrome jaws",
+            "Hiu Mecha Bertentakel|glossy mecha shark with tentacles",
+            "Banteng Biomech|cybernetic bull beast with iron horns",
+            "Kalajengking Mecha Putih|white mecha scorpion with neon-yellow accents",
+            "Belalang Sembah Mekanik|brass mechanical praying mantis",
+            "Serigala Mecha Hitam|black mecha wolf with glowing red eyes",
+            "Harimau Biomech|chrome biomechanical tiger",
+            "Laba-laba Bilah Putih|white blade-legged mecha spider",
+            "Dinosaurus Mecha Tunggangan|armored mecha dinosaur mount with smoldering plates"
+        ];
+        OPT.acc.bio = [
+            "Sayap Bilah Hitam Chrome|multiple black chrome blade wings",
+            "Sayap Mantis Mekanik|mechanical mantis wings",
+            "Lengan Bilah Putih Delapan|eight spider-like white blade arms from the back",
+            "Ekor Tulang Belakang Putih|long segmented white vertebrae tail",
+            "Ekor Chrome Berduri|long barbed chrome tail",
+            "Tentakel Ungu Berduri|violet spined tentacles with glowing orbs",
+            "Tentakel Kaca Transparan|translucent glass tubular tentacles",
+            "Tentakel Hitam Bersegmen|black ribbed segmented tentacles",
+            "Rantai Berduri Menjuntai|trailing spiked chains",
+            "Kabel Tabung dari Kepala|tubular cables flowing from the head"
+        ];
+
+        const ui = { eng: document.getElementById('enginePanel'), id: document.getElementById('identityPanel'), app: document.getElementById('appearancePanel') };
+
+        function createSelect(n, opts, lbl, defaultEmpty = true) {
+            let h = `<div class="flex flex-col gap-1 w-full"><label class="text-xs font-bold uppercase tracking-wider text-gray-400">${lbl}</label><div class="select-wrapper"><select name="${n}" id="${n}" class="custom-input cursor-pointer text-sm">`;
+            if (defaultEmpty) h += `<option value="">-- Tidak dipilih --</option>`;
+            opts.forEach(o => {
+                if (o.startsWith("Otomatis|")) return;
+                const p = o.split('|');
+                h += `<option value="${p[1]||p[0]}">${p[0]}</option>`;
+            });
+            return h + `</select></div></div>`;
+        }
+
+        function createCheckboxGroup(n, opts, lbl) {
+            let h = `<div class="flex flex-col gap-2 w-full mt-2"><label class="text-xs font-bold uppercase tracking-wider text-gray-400">${lbl}</label><div class="grid grid-cols-2 gap-2">`;
+            opts.forEach(o => { const p = o.split('|'); h += `<label class="custom-radio"><input type="checkbox" name="${n}[]" value="${p[1]||p[0]}"> <span class="text-xs">${p[0]}</span></label>`; });
+            return h + `</div></div>`;
+        }
+
+        function createAccordionList(id, title, groupsData, inputName, defVal = "", allowEmpty = true) {
+            let defLbl = "Pilih Ospi...", h = "";
+            if (allowEmpty) {
+                const isChecked = defVal === "" ? "checked" : "";
+                if (isChecked) defLbl = "Tidak dipilih";
+                h += `<label class="custom-radio acc-item"><input type="radio" name="${inputName}" value="" ${isChecked} data-acc-id="${id}" data-acc-label="Tidak dipilih"> <span class="text-sm item-text">Tidak dipilih</span></label>`;
+            }
+            Object.entries(groupsData).forEach(([g, items]) => {
+                h += `<div class="acc-group"><div class="text-xs text-gold mb-1 font-bold border-b border-gray-700 pb-1 mt-2">${g}</div><div class="flex flex-col gap-1">`;
+                items.forEach(i => {
+                    const p = i.split('|'); const v = p[1]||p[0]; const chk = v === defVal ? "checked" : "";
+                    if (chk && v !== "") defLbl = p[0];
+                    h += `<label class="custom-radio acc-item"><input type="radio" name="${inputName}" value="${v}" ${chk} data-acc-id="${id}" data-acc-label="${p[0].replace(/"/g, '&quot;')}"> <span class="text-sm item-text">${p[0]}</span></label>`;
+                });
+                h += `</div></div>`;
+            });
+            return `<div class="flex flex-col gap-1 w-full"><label class="text-xs font-bold uppercase tracking-wider text-gray-400">${title}</label><div class="accordion"><button type="button" class="accordion-btn text-sm" onclick="toggleAccordion('${id}')"><span id="${id}_display">${defLbl}</span><i class="fas fa-chevron-down text-gold"></i></button><div id="${id}_content" class="accordion-content"><input type="text" class="custom-input !py-1 !px-2 mb-3 text-sm search-input" placeholder="Cari..." oninput="filterAccordion('${id}', this.value)"><div class="flex flex-col gap-1 accordion-list">${h}</div></div></div></div>`;
+        }
+
+        function renderForm() {
+            ui.eng.innerHTML = createSelect('engine', OPT.engines, 'AI Engine Render', false);
+            let idH = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">` + 
+                createSelect('mode', OPT.modes, 'Mode Karakter', false) + 
+                createSelect('gender', OPT.genders, 'Gender', false) + 
+                createSelect('age', OPT.ages, 'Usia Karakter (Dewasa)', false) + 
+                `</div>`;
+            
+            idH += `<div id="panelHuman" class="flex flex-col gap-4 p-4 border border-gray-700 rounded-lg bg-black bg-opacity-20">` + 
+                createAccordionList('accCountry', 'Asal / Kebangsaan', OPT.continents, 'country', '', true) + 
+                `<div id="panelIndoTribe" class="hide">` + 
+                createSelect('indonesiaTribe', OPT.indonesiaTribes, 'Suku Indonesia', true) + 
+                `</div><div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + 
+                createSelect('skinTone', OPT.skinTones, 'Warna Kulit', true) + 
+                createSelect('faceShape', OPT.faceShapes, 'Bentuk Wajah', true) + 
+                `</div></div>`;
+            
+            idH += `<div id="panelFantasy" class="hide flex flex-col gap-4 p-4 border border-gold-dim rounded-lg bg-black bg-opacity-40 shadow-inner">` + 
+                createAccordionList('accRace', 'Kategori & Ras Fantasi', OPT.fantasyCategories, 'fantasyRace', '', true) + 
+                `<div id="panelBeastkinLevel" class="hide">` + 
+                createSelect('beastkinLevel', OPT.beastkinLevels, 'Tingkat Wujud Hewan', true) + 
+                `</div><div id="dynamicFantasyTraitsContainer"><p class="text-xs text-gray-500 italic">Pilih ras fantasi terlebih dahulu.</p></div></div>`;
+            
+            ui.id.innerHTML = idH;
+
+            let apH = `<div class="mb-4">` + createAccordionList('accVisualStyle', 'Gaya Visual (Wajib)', OPT.visualStyles, 'visualStyle', 'photorealistic', false) + `</div>`;
+            
+            apH += `<div class="section-title text-sm font-cinzel text-gold mt-2">Fisik & Proporsi</div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div class="flex flex-col gap-1 w-full"><label class="text-xs font-bold uppercase tracking-wider text-gray-400">Tinggi Badan (CM)</label><div class="flex items-center gap-2"><input type="number" id="heightCm" name="heightCm" value="" placeholder="Ketik angka..." class="custom-input !w-32 text-center"><span id="heightCategory" class="text-xs text-gold">Tidak diisi</span></div></div>` + 
+                createSelect('scaleRef', OPT.scaleReferences, 'Objek Pembanding', true) + 
+                createSelect('bodyType', OPT.bodyTypes, 'Tipe Tubuh', true) + 
+                createSelect('proportion', OPT.proportions, 'Proporsi Tubuh', true) + `</div>`;
+            
+            apH += `<div class="section-title text-sm font-cinzel text-gold mt-2">Wajah & Rambut</div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">` + 
+                createSelect('expression', OPT.expressions, 'Ekspresi', true) + 
+                createSelect('makeup', OPT.makeups, 'Makeup', true) + 
+                `</div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">` + 
+                createSelect('hairColor', OPT.hairColors, 'Warna Rambut', true) + 
+                `<div id="panelHairFemale">` + createSelect('hairFemale', OPT.hairWomen, 'Rambut Wanita', true) + `</div><div id="panelHairMale" class="hide flex flex-col gap-4">` + 
+                createSelect('hairMale', OPT.hairMen, 'Rambut Pria', true) + 
+                createSelect('facialHair', OPT.facialHair, 'Jenggot / Kumis', true) + `</div></div>`;
+            
+            apH += `<div class="section-title text-sm font-cinzel text-gold mt-2">Outfit & Setting</div><div class="mb-4" id="outfitSelectorWrapper"></div>`;
+            apH += `<div class="section-title text-sm font-cinzel text-gold mt-2">Aksesori</div><div class="mb-4" id="accPanelWrapper"></div>`;
+            
+            apH += `<div class="section-title text-sm font-cinzel text-gold mt-2">Detail Pemakaian (Opsional)</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">`
+                + createSelect('outfitFit', OPT.outfitFits, 'Fit / Potongan', true)
+                + createSelect('outfitSleeve', OPT.outfitSleeves, 'Lengan', true)
+                + createSelect('outfitNeck', OPT.outfitNecks, 'Leher / Kerah', true)
+                + createSelect('outfitClosure', OPT.outfitClosures, 'Penutup', true)
+                + createSelect('outfitTopLength', OPT.outfitTopLengths, 'Panjang Atasan', true)
+                + createSelect('outfitBottomLength', OPT.outfitBottomLengths, 'Panjang Bawahan', true)
+                + createSelect('outfitBottomCut', OPT.outfitBottomCuts, 'Potongan Bawahan', true)
+                + createSelect('outfitStyling', OPT.outfitStylings, 'Styling', true)
+            + `</div>`;
+
+            apH += `<div class="section-title text-sm font-cinzel text-gold mt-4">Komposisi</div><div class="mb-4" id="compPanelWrapper"></div>`;
+            
+            ui.app.innerHTML = apH;
+            
+            document.getElementById('outfitSelectorWrapper').innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3 bg-black bg-opacity-30 p-3 rounded-lg border border-gold-dim">
+                    <span class="text-sm font-semibold text-gray-200"><i class="fas fa-shirt gold-text mr-2"></i>Mode outfit</span>
+                    <div class="flex gap-2">
+                        <button type="button" id="btnModeSet" class="mixchip active" style="width:auto">Set lengkap</button>
+                        <button type="button" id="btnModeMix" class="mixchip" style="width:auto">Mix and Match</button>
+                    </div>
+                    <input type="hidden" name="outfitMode" id="outfitMode" value="set">
+                </div>
+                <div id="setOutfitPanel">
+                <div class="flex flex-col gap-1 w-full">
+                    <div class="p-4 border border-gold-dim rounded-lg bg-black bg-opacity-30 shadow-inner">
+                        <div id="outfitSummaryBox" class="flex justify-between items-center mb-3 bg-gray-900 bg-opacity-70 p-3 rounded border border-gray-700">
+                            <span class="text-sm font-semibold" id="outfitSummaryText">Dipilih: <span class="text-gray-400">Tidak dipilih</span></span>
+                            <button type="button" id="btnOutfitClear" class="text-red-400 hover:text-white hover:bg-red-900 text-xs px-2 py-1 rounded transition-colors" style="display:none;"><i class="fas fa-times mr-1"></i>Hapus</button>
+                        </div>
+                        
+                        <div id="outfitChips" class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-1">
+                            <!-- Render chips here -->
+                        </div>
+                        
+                        <div id="outfitSetsContainer" class="hide border-t border-gray-700 pt-3 mt-1">
+                            <div class="flex items-center justify-between mb-3">
+                                <span id="outfitActiveGenre" class="text-sm font-bold text-gold uppercase tracking-widest bg-yellow-900 bg-opacity-20 px-3 py-1 rounded"></span>
+                                <button type="button" id="btnOutfitBack" class="text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded transition-colors"><i class="fas fa-arrow-left mr-1"></i> Kembali ke Genre</button>
+                            </div>
+                            <input type="text" id="outfitSearch" class="custom-input !py-2 !px-3 mb-3 text-sm search-input" placeholder="Cari nama outfit di kategori ini...">
+                            <div id="outfitSetsList" class="max-h-[280px] overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar">
+                                <!-- Render radios here -->
+                            </div>
+                        </div>
+                        <input type="hidden" name="outfit" id="outfitValue" value="">
+                    </div>
+                </div>
+</div>
+                <div id="mixOutfitPanel" class="hide">
+                    <div class="p-4 border border-gold-dim rounded-lg bg-black bg-opacity-30 shadow-inner">
+                        <div class="flex justify-between items-center mb-3 bg-gray-900 bg-opacity-70 p-3 rounded border border-gray-700">
+                            <span class="text-sm font-semibold" id="mixSummaryText">Dipilih: <span class="text-gray-400">Tidak dipilih</span></span>
+                            <button type="button" id="btnMixClearAll" class="text-red-400 hover:text-white hover:bg-red-900 text-xs px-2 py-1 rounded transition-colors" style="display:none;"><i class="fas fa-times mr-1"></i>Hapus</button>
+                        </div>
+                        <div id="mixChips" class="grid grid-cols-2 gap-2 mb-1"></div>
+                        <p id="mixSetNote" class="hide text-xs text-gray-400 italic mt-2">Atasan dan Bawahan dinonaktifkan karena Satu Set dipilih.</p>
+                        <div id="mixCatView" class="hide border-t border-gray-700 pt-3 mt-3">
+                            <div class="flex items-center justify-between mb-3">
+                                <span id="mixActiveCat" class="text-sm font-bold text-gold uppercase tracking-widest bg-yellow-900 bg-opacity-20 px-3 py-1 rounded"></span>
+                                <button type="button" id="btnMixBack" class="text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded transition-colors"><i class="fas fa-arrow-left mr-1"></i> Kembali</button>
+                            </div>
+                            <div class="flex justify-between items-center mb-3 bg-gray-900 bg-opacity-70 p-2 rounded border border-gray-700">
+                                <span class="text-sm" id="mixCatSummary">Dipilih: <span class="text-gray-400">Tidak dipilih</span></span>
+                                <button type="button" id="btnMixCatClear" class="text-red-400 hover:text-white hover:bg-red-900 text-xs px-2 py-1 rounded transition-colors" style="display:none;"><i class="fas fa-times"></i></button>
+                            </div>
+                            <input type="text" id="mixSearch" class="custom-input !py-2 !px-3 mb-3 text-sm search-input" placeholder="Cari item di kategori ini...">
+                            <div id="mixItemList" class="max-h-[280px] overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar"></div>
+                            <div id="mixSelects" class="mt-3"></div>
+                            <p class="text-xs text-gray-500 italic mt-2">Warna, bahan, dan motif dipakai bila item dipilih.</p>
+                        </div>
+                        <div id="mixHiddenInputs"></div>
+                    </div>
+                </div>
+            `;
+            
+            renderOutfitSelector();
+            initMixOutfit();
+            initAccessories();
+            initComposition();
+            attachDynamicListeners(); 
+            initSectionCollapse();
+        }
+
+        function initSectionCollapse() {
+            const root = document.getElementById('appearancePanel');
+            if (!root) return;
+            const closedByDefault = ['Fisik & Proporsi', 'Wajah & Rambut', 'Detail Pemakaian (Opsional)', 'Komposisi'];
+            Array.from(root.querySelectorAll(':scope > .section-title')).forEach(t => {
+                const body = document.createElement('div');
+                body.className = 'sec-body';
+                let n = t.nextElementSibling;
+                while (n && !n.classList.contains('section-title')) { const nx = n.nextElementSibling; body.appendChild(n); n = nx; }
+                t.after(body);
+                t.classList.add('sec-toggle');
+                t.insertAdjacentHTML('beforeend', '<i class="fas fa-chevron-down sec-chev"></i>');
+                const close = closedByDefault.includes(t.textContent.trim());
+                body.classList.toggle('hide', close);
+                t.classList.toggle('collapsed', close);
+                t.addEventListener('click', () => { const h = body.classList.toggle('hide'); t.classList.toggle('collapsed', h); });
+            });
+        }
+
+        window.toggleAccordion = id => { const c = document.getElementById(id + '_content'); if (c.classList.contains('expanded')) c.classList.remove('expanded'); else { document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('expanded')); c.classList.add('expanded'); } };
+        window.updateAccordionDisplay = (id, txt, val) => {
+            if (document.getElementById(id + '_display')) document.getElementById(id + '_display').textContent = txt;
+            if (document.getElementById(id + '_content')) document.getElementById(id + '_content').classList.remove('expanded');
+            if (id === 'accCountry') { const pt = document.getElementById('panelIndoTribe'); if (txt === 'Indonesia') pt.classList.remove('hide'); else { pt.classList.add('hide'); document.getElementById('indonesiaTribe').value = ""; } }
+            if (id === 'accRace') handleFantasyRaceChange(val);
+        };
+        window.filterAccordion = (id, q) => { const c = document.getElementById(id + '_content'), groups = c.querySelectorAll('.acc-group'); groups.forEach(g => { let vis = false; g.querySelectorAll('.acc-item').forEach(i => { if (i.querySelector('.item-text').textContent.toLowerCase().includes(q.toLowerCase())) { i.style.display = 'flex'; vis = true; } else i.style.display = 'none'; }); g.style.display = vis ? 'block' : 'none'; }); };
+
+        function updateHeightCategory(cm) {
+            if (!cm || isNaN(cm)) {
+                document.getElementById('heightCategory').textContent = "Tidak diisi";
+                return;
+            }
+            let cat = cm < 10 ? "Sangat Mungil (<10 cm)" : cm <= 20 ? "Seukuran tangan (10-20 cm)" : cm <= 60 ? "Mungil (20-60 cm)" : cm <= 120 ? "Sangat pendek (60-120 cm)" : cm <= 150 ? "Pendek (120-150 cm)" : cm <= 170 ? "Sedang (150-170 cm)" : cm <= 190 ? "Tinggi (170-190 cm)" : cm <= 210 ? "Sangat tinggi (190-210 cm)" : cm <= 250 ? "Raksasa Kecil (210-250 cm)" : "Raksasa (250+ cm)";
+            document.getElementById('heightCategory').textContent = cat;
+        }
+
+        function handleFantasyRaceChange(rv) {
+            const c = document.getElementById('dynamicFantasyTraitsContainer'), b = document.getElementById('panelBeastkinLevel');
+            if (!rv) { c.innerHTML = `<p class="text-xs text-gray-500 italic">Pilih ras fantasi terlebih dahulu.</p>`; b.classList.add('hide'); document.getElementById('heightCm').value = ''; updateHeightCategory(''); return; }
+            let catName = ""; for (const [k, arr] of Object.entries(OPT.fantasyCategories)) { if (arr.some(r => (r.split('|')[1]||r.split('|')[0]) === rv)) { catName = k; break; } }
+            let traits = OPT.specificFantasyTraits[catName] || (catName === "Beastkin (Manusia Hewan)" ? OPT.specificFantasyTraits["Beastkin"] : null);
+            c.innerHTML = traits ? buildTraitChips(traits, rv) : `<p class="text-xs text-gray-500 italic">Tidak ada ciri khusus terdaftar.</p>`;
+            if (traits) initTraitChips();
+            (["Beastkin (Manusia Hewan)"].includes(catName) || ["Centaur", "Minotaur", "Harpy", "Siren", "Werewolf", "Satyr", "Griffin-kin", "Jackal Guardian", "Chimera-kin"].includes(rv)) ? b.classList.remove('hide') : (b.classList.add('hide'), (document.getElementById('beastkinLevel').value = ''));
+            
+            let h = 170; const r = rv;
+            if (["Fae", "Fairy", "Pixie", "Sylph"].includes(r)) h = 15; else if (r === "Gnome") h = 75; else if (["Halfling", "Goblin"].includes(r)) h = 115; else if (r === "Dwarf") h = 135; else if (r === "Orc") h = 205; else if (["Troll", "Ogre", "Minotaur"].includes(r)) h = 275; else if (r === "Giant") h = 500;
+            document.getElementById('heightCm').value = h; updateHeightCategory(h);
+        }
+
+        function renderOutfitSelector() {
+            const chipsContainer = document.getElementById('outfitChips');
+            let h = '';
+            Object.entries(OPT.outfits).forEach(([genre, items]) => {
+                h += `<button type="button" class="chip-btn w-full sm:w-auto" data-genre="${genre}">
+                        <span class="font-bold">${genre}</span>
+                        <span class="chip-count ml-2">${items.length}</span>
+                      </button>`;
+            });
+            chipsContainer.innerHTML = h;
+            
+            document.querySelectorAll('.chip-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    openOutfitGenre(e.currentTarget.dataset.genre);
+                });
+            });
+            
+            document.getElementById('btnOutfitClear').addEventListener('click', clearOutfit);
+            document.getElementById('btnOutfitBack').addEventListener('click', () => {
+                document.getElementById('outfitSetsContainer').classList.add('hide');
+                document.getElementById('outfitChips').style.display = 'flex';
+                document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+            });
+            
+            document.getElementById('outfitSearch').addEventListener('input', (e) => {
+                const q = e.target.value.toLowerCase();
+                document.querySelectorAll('.outfit-item').forEach(item => {
+                    const txt = item.querySelector('.item-text').textContent.toLowerCase();
+                    item.style.display = txt.includes(q) ? 'flex' : 'none';
+                });
+            });
+        }
+
+        function openOutfitGenre(genre) {
+            document.getElementById('outfitChips').style.display = 'none';
+            const container = document.getElementById('outfitSetsContainer');
+            container.classList.remove('hide');
+            document.getElementById('outfitActiveGenre').textContent = genre;
+            document.getElementById('outfitSearch').value = '';
+            
+            const list = document.getElementById('outfitSetsList');
+            let h = '';
+            const items = OPT.outfits[genre];
+            const currVal = document.getElementById('outfitValue').value;
+            
+            items.forEach(item => {
+                const p = item.split('|');
+                const v = p[1] || p[0];
+                const label = p[0];
+                const isChecked = currVal === v ? 'checked' : '';
+                h += `<label class="custom-radio outfit-item px-3 py-3 border border-transparent hover:border-gray-700 hover:bg-gray-800 rounded transition-colors cursor-pointer">
+                        <input type="radio" name="_outfitRadio" value="${v}" data-label="${label}" ${isChecked} class="!w-4 !h-4 mt-0.5">
+                        <span class="text-sm item-text ml-2 text-white">${label}</span>
+                      </label>`;
+            });
+            list.innerHTML = h;
+            
+            list.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if(e.target.checked) setOutfitValue(e.target.value, e.target.dataset.label, genre);
+                });
+            });
+        }
+
+        function setOutfitValue(val, label, genre) {
+            document.getElementById('outfitValue').value = val;
+            const summaryText = document.getElementById('outfitSummaryText');
+            const clearBtn = document.getElementById('btnOutfitClear');
+            if (val) {
+                summaryText.innerHTML = `Dipilih: <span class="text-gold">${genre} &gt; ${label}</span>`;
+                clearBtn.style.display = 'inline-flex';
+            } else {
+                summaryText.innerHTML = `Dipilih: <span class="text-gray-400">Tidak dipilih</span>`;
+                clearBtn.style.display = 'none';
+            }
+        }
+
+        function clearOutfit() {
+            setOutfitValue('', '', '');
+            document.querySelectorAll('input[name="_outfitRadio"]').forEach(r => r.checked = false);
+        }
+
+        function attachDynamicListeners() {
+            document.getElementById('mode').addEventListener('change', e => { e.target.value === 'fantasy' ? (document.getElementById('panelHuman').classList.add('hide'), document.getElementById('panelFantasy').classList.remove('hide')) : (document.getElementById('panelHuman').classList.remove('hide'), document.getElementById('panelFantasy').classList.add('hide')); });
+            document.getElementById('gender').addEventListener('change', e => { const v = e.target.value, f = document.getElementById('panelHairFemale'), m = document.getElementById('panelHairMale'); if (v === 'female') { f.classList.remove('hide'); m.classList.add('hide'); } else if (v === 'male') { f.classList.add('hide'); m.classList.remove('hide'); } else { f.classList.remove('hide'); m.classList.remove('hide'); } });
+            document.getElementById('heightCm').addEventListener('input', e => updateHeightCategory(parseInt(e.target.value)));
+            document.addEventListener('change', e => { if (e.target.type === 'radio' && e.target.dataset.accId) updateAccordionDisplay(e.target.dataset.accId, e.target.dataset.accLabel, e.target.value); });
+            document.addEventListener('click', e => { if (!e.target.closest('.accordion')) document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('expanded')); });
+            
+            document.getElementById('btnRandom').addEventListener('click', () => { 
+                const rnd = a => { const p = a[Math.floor(Math.random()*a.length)].split('|'); return p[1]||p[0]; }; 
+                const rId = document.getElementById('rnd_identity').checked;
+                const rPhy = document.getElementById('rnd_physical').checked;
+                const rHair = document.getElementById('rnd_hair').checked;
+                const rExp = document.getElementById('rnd_expression').checked;
+                const rOut = document.getElementById('rnd_outfit').checked;
+
+                if (!rId && !rPhy && !rHair && !rExp && !rOut) return showToast("Pilih minimal satu bagian (centang) untuk diacak!");
+
+                if(rId) {
+                    document.getElementById('mode').value = Math.random()>0.5?'human':'fantasy'; 
+                    document.getElementById('mode').dispatchEvent(new Event('change')); 
+                    
+                    ['gender', 'age'].forEach(id => { 
+                        const sel = document.getElementById(id); 
+                        if (sel) { sel.value = rnd(OPT[id+'s'] || OPT[id]); sel.dispatchEvent(new Event('change')); } 
+                    });
+
+                    if (document.getElementById('mode').value === 'human') {
+                        // FIX: value radio negara = nama Inggris (mis. "Indonesian"), sedangkan label = "Indonesia".
+                        // Sebelumnya dicari value="Indonesia" -> querySelector null -> TypeError. Sekarang dicari lewat data-acc-label.
+                        const countryRadios = Array.from(document.querySelectorAll('input[name="country"]')).filter(r => r.value !== "");
+                        const pickCountry = (lbl) => countryRadios.find(r => r.dataset.accLabel === lbl);
+                        let cRadio = null;
+                        if (Math.random() > 0.3) {
+                            cRadio = pickCountry("Indonesia");
+                        }
+                        if (!cRadio) {
+                            cRadio = countryRadios[Math.floor(Math.random() * countryRadios.length)];
+                        }
+                        if (cRadio) {
+                            cRadio.checked = true;
+                            const cLabel = cRadio.dataset.accLabel;
+                            updateAccordionDisplay('accCountry', cLabel, cRadio.value);
+                            document.getElementById('indonesiaTribe').value = (cLabel === "Indonesia") ? rnd(OPT.indonesiaTribes) : "";
+                        }
+                        
+                        ['skinTone', 'faceShape'].forEach(id => {
+                            const sel = document.getElementById(id);
+                            if (sel) { sel.value = rnd(OPT[id+'s']); sel.dispatchEvent(new Event('change')); }
+                        });
+                    } else {
+                        const allRaces = Object.values(OPT.fantasyCategories).flat();
+                        const race = rnd(allRaces);
+                        document.querySelector(`input[name="fantasyRace"][value="${race}"]`).checked = true;
+                        updateAccordionDisplay('accRace', (document.querySelector(`input[name="fantasyRace"][value="${race}"]`)?.dataset.accLabel) || race, race);
+                        
+                        if(!document.getElementById('panelBeastkinLevel').classList.contains('hide')) {
+                            document.getElementById('beastkinLevel').value = rnd(OPT.beastkinLevels);
+                        }
+                        
+                        const traits = document.querySelectorAll('input[name="dynamicFantasyTraits[]"]');
+                        traits.forEach(t => t.checked = Math.random() > 0.6);
+                        traitRefresh();
+                    }
+                }
+
+                if(rPhy) {
+                    document.getElementById('heightCm').value = Math.floor(Math.random() * (210 - 140 + 1) + 140);
+                    document.getElementById('heightCm').dispatchEvent(new Event('input'));
+                    
+                    ['scaleRef', 'bodyType', 'proportion'].forEach(id => {
+                        const sel = document.getElementById(id);
+                        if (id === 'scaleRef' && Math.random() > 0.7) { if(sel) sel.value = ""; }
+                        else if(sel) { sel.value = rnd(OPT[id+'s'] || OPT[id] || OPT.basicPlaceholders[id] || OPT.scaleReferences); }
+                        if(sel) sel.dispatchEvent(new Event('change'));
+                    });
+                }
+
+                if(rHair) {
+                    const hc = document.getElementById('hairColor');
+                    if(hc) { hc.value = rnd(OPT.hairColors); hc.dispatchEvent(new Event('change')); }
+                    
+                    const g = document.getElementById('gender').value;
+                    if(g === 'female' || g === 'androgynous') {
+                        const hf = document.getElementById('hairFemale');
+                        if(hf) { hf.value = rnd(OPT.hairWomen); hf.dispatchEvent(new Event('change')); }
+                    }
+                    if(g === 'male' || g === 'androgynous') {
+                        const hm = document.getElementById('hairMale');
+                        if(hm) { hm.value = rnd(OPT.hairMen); hm.dispatchEvent(new Event('change')); }
+                        const fh = document.getElementById('facialHair');
+                        if(fh) { fh.value = Math.random() > 0.5 ? rnd(OPT.facialHair) : ""; fh.dispatchEvent(new Event('change')); }
+                    }
+                }
+
+                if(rExp) {
+                    ['expression', 'makeup'].forEach(id => {
+                        const sel = document.getElementById(id);
+                        if(sel) { sel.value = rnd(OPT[id+'s']); sel.dispatchEvent(new Event('change')); }
+                    });
+                }
+
+                if(rOut && document.getElementById('outfitMode')?.value === 'mix') {
+                    mixRandomize();
+                } else if(rOut) {
+                    const rg = document.getElementById('gender')?.value || 'female';
+                    const rOk = it => { const t = (it.split('|')[2] || '').trim(); return !t || rg === 'androgynous' || (rg === 'female' ? t === 'W' : t === 'M'); };
+                    let oGenres = Object.keys(OPT.outfits).filter(g => OPT.outfits[g].some(rOk));
+                    if (!oGenres.length) oGenres = Object.keys(OPT.outfits);
+                    const rGenre = oGenres[Math.floor(Math.random() * oGenres.length)];
+                    const rItemsAll = OPT.outfits[rGenre];
+                    const rItems = rItemsAll.some(rOk) ? rItemsAll.filter(rOk) : rItemsAll;
+                    const selOutfit = rnd(rItems);
+                    
+                    const p = selOutfit.split('|');
+                    const v = p[1]||p[0];
+                    const fullItem = rItems.find(i => (i.split('|')[1]||i.split('|')[0]) === v);
+                    const label = fullItem.split('|')[0];
+                    
+                    setOutfitValue(v, label, rGenre);
+                    
+                    ['outfitFit', 'outfitSleeve', 'outfitNeck', 'outfitClosure', 'outfitTopLength', 'outfitBottomLength', 'outfitBottomCut', 'outfitStyling'].forEach(id => {
+                        const sel = document.getElementById(id);
+                        if(sel) { 
+                            sel.value = Math.random() > 0.5 ? rnd(OPT[id+'s']) : ""; 
+                            sel.dispatchEvent(new Event('change')); 
+                        }
+                    });
+                }
+
+                showToast("Karakter berhasil diacak!"); 
+            });
+            
+            document.getElementById('btnReset').addEventListener('click', () => {
+                document.getElementById('characterForm').reset();
+                document.getElementById('strictMode').checked = true;
+                document.getElementById('qualityMode').checked = false;
+                
+                document.querySelectorAll('select').forEach(sel => {
+                    if(['engine', 'mode', 'gender', 'age', 'visualStyle', 'aspectRatio'].includes(sel.id) || sel.name === 'visualStyle') {
+                        sel.selectedIndex = 0;
+                    } else {
+                        sel.value = "";
+                    }
+                    sel.dispatchEvent(new Event('change'));
+                });
+                
+                document.querySelectorAll('input[type="radio"][name="country"]').forEach(r => { if(r.value === "") r.checked = true; });
+                updateAccordionDisplay('accCountry', 'Tidak dipilih', '');
+                
+                document.querySelectorAll('input[type="radio"][name="fantasyRace"]').forEach(r => { if(r.value === "") r.checked = true; });
+                updateAccordionDisplay('accRace', 'Tidak dipilih', '');
+
+                document.querySelectorAll('input[type="radio"][name="visualStyle"]').forEach(r => { if(r.value === "photorealistic") r.checked = true; });
+                updateAccordionDisplay('accVisualStyle', 'Photorealistic', 'photorealistic');
+                
+                document.getElementById('heightCm').value = '';
+                document.getElementById('heightCategory').textContent = 'Tidak diisi';
+                
+                clearOutfit();
+                if(document.getElementById('outfitSetsContainer').classList.contains('hide') === false) {
+                    document.getElementById('btnOutfitBack').click();
+                }
+                
+                mixResetAll();
+                accResetAll();
+                compResetAll();
+                showToast("Semua pilihan direset!");
+            });
+
+            document.getElementById('btnSavePreset').addEventListener('click', () => { const fd = new FormData(document.getElementById('characterForm')); const d = Object.fromEntries(fd.entries()); d.dynamicFantasyTraits = fd.getAll('dynamicFantasyTraits[]'); d.strictMode = document.getElementById('strictMode').checked; d.qualityMode = document.getElementById('qualityMode').checked; d.consistencyLock = !!document.getElementById('consistencyLock')?.checked; delete d._outfitRadio; localStorage.setItem('vb_preset', JSON.stringify(d)); showToast("Preset disimpan!"); });
+            
+            document.getElementById('btnLoadPreset').addEventListener('click', () => { 
+                const r = localStorage.getItem('vb_preset'); 
+                if (!r) return showToast("Tidak ada preset yang tersimpan."); 
+                const d = JSON.parse(r); 
+                
+                document.getElementById('btnReset').click();
+
+                Object.keys(d).forEach(k => { 
+                    const f = document.getElementsByName(k)[0]; 
+                    if (f) { 
+                        if(f.type === 'radio') {
+                            const rBtn = document.querySelector(`input[name="${k}"][value="${d[k]}"]`);
+                            if(rBtn) {
+                                rBtn.checked = true;
+                                if (rBtn.dataset.accId) updateAccordionDisplay(rBtn.dataset.accId, rBtn.dataset.accLabel, rBtn.value);
+                            }
+                        } else if(f.type !== 'checkbox' && k !== 'outfit') {
+                            f.value = d[k]; 
+                            f.dispatchEvent(new Event('change')); 
+                        }
+                    } 
+                }); 
+
+                OPT.mix.cats.forEach(c => { const h = document.getElementById('mix_' + c.id); if (h) h.value = d['mix_' + c.id] || ''; });
+                applyOutfitMode(d.outfitMode === 'mix' ? 'mix' : 'set');
+                mixOnGender();
+                accOnGender();
+                compRefreshAll();
+                { const cl = document.getElementById('consistencyLock'); if (cl) cl.checked = Boolean(d.consistencyLock); }
+
+                { const hv = parseInt(document.getElementById('heightCm').value); updateHeightCategory(isNaN(hv) ? '' : hv); }
+
+                if (d.strictMode !== undefined) {
+                    document.getElementById('strictMode').checked = Boolean(d.strictMode);
+                }
+                if (d.qualityMode !== undefined) {
+                    document.getElementById('qualityMode').checked = Boolean(d.qualityMode);
+                }
+
+                if (d.outfit) {
+                    let foundGenre = '', foundLabel = '';
+                    for (const [genre, items] of Object.entries(OPT.outfits)) {
+                        const match = items.find(i => (i.split('|')[1]||i.split('|')[0]) === d.outfit);
+                        if (match) {
+                            foundGenre = genre;
+                            foundLabel = match.split('|')[0];
+                            break;
+                        }
+                    }
+                    if (foundGenre) setOutfitValue(d.outfit, foundLabel, foundGenre);
+                }
+
+                if (d.dynamicFantasyTraits) {
+                    d.dynamicFantasyTraits.forEach(val => {
+                        const cb = document.querySelector(`input[name="dynamicFantasyTraits[]"][value="${val}"]`);
+                        if (cb) { cb.checked = true; traitRefresh(); }
+                    });
+                }
+
+                showToast("Preset dimuat!"); 
+            });
+        }
+
+        // ===== MODE MIX AND MATCH =====
+        let mixActiveCat = '';
+
+        function mixGender() { return document.getElementById('gender')?.value || 'female'; }
+
+        function mixListFor(cat, g) {
+            return (OPT.mix.items[cat] || []).filter(it => {
+                const t = (it.split('|')[2] || '').trim();
+                if (!t || g === 'androgynous') return true;
+                return g === 'female' ? t === 'W' : t === 'M';
+            });
+        }
+        function mixList(cat) { return mixListFor(cat, mixGender()); }
+        function mixValOf(it) { const p = it.split('|'); return p[1] || p[0]; }
+        function mixLabelOf(cat, en) {
+            const f = (OPT.mix.items[cat] || []).find(it => mixValOf(it) === en);
+            return f ? f.split('|')[0] : en;
+        }
+        function mixGet(cat) { return document.getElementById('mix_' + cat)?.value || ''; }
+        function mixIsBlocked(cat) { return (cat === 'top' || cat === 'bottom') && mixGet('set') !== ''; }
+        function mixCatLabel(cat) { const c = OPT.mix.cats.find(x => x.id === cat); return c ? c.label : cat; }
+
+        function initMixOutfit() {
+            let h = '';
+            OPT.mix.cats.forEach(c => {
+                h += `<div class="mix-sel-group grid grid-cols-1 sm:grid-cols-3 gap-3 hide" data-cat="${c.id}">`
+                    + createSelect(`mix_${c.id}_color`, OPT.mix.colors, 'Warna', true)
+                    + createSelect(`mix_${c.id}_material`, OPT.mix.materials, 'Bahan', true)
+                    + createSelect(`mix_${c.id}_pattern`, OPT.mix.patterns, 'Motif', true)
+                    + `</div>`;
+            });
+            document.getElementById('mixSelects').innerHTML = h;
+            document.getElementById('mixHiddenInputs').innerHTML = OPT.mix.cats.map(c => `<input type="hidden" name="mix_${c.id}" id="mix_${c.id}" value="">`).join('');
+
+            document.getElementById('btnModeSet').addEventListener('click', () => applyOutfitMode('set'));
+            document.getElementById('btnModeMix').addEventListener('click', () => applyOutfitMode('mix'));
+            document.getElementById('btnMixClearAll').addEventListener('click', () => { OPT.mix.cats.forEach(c => { document.getElementById('mix_' + c.id).value = ''; }); if (mixActiveCat) mixRenderList(); mixRefresh(); });
+            document.getElementById('btnMixBack').addEventListener('click', mixCloseCat);
+            document.getElementById('btnMixCatClear').addEventListener('click', () => { if (mixActiveCat) mixSetItem(mixActiveCat, ''); mixRenderList(); });
+            document.getElementById('mixSearch').addEventListener('input', e => {
+                const q = e.target.value.toLowerCase();
+                document.querySelectorAll('.mix-item').forEach(item => {
+                    const txt = item.querySelector('.item-text').textContent.toLowerCase();
+                    item.style.display = txt.includes(q) ? 'flex' : 'none';
+                });
+            });
+            document.getElementById('gender').addEventListener('change', mixOnGender);
+            document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('input.search-input')) e.preventDefault(); });
+            mixRefresh();
+        }
+
+        function applyOutfitMode(mode) {
+            mode = mode === 'mix' ? 'mix' : 'set';
+            document.getElementById('outfitMode').value = mode;
+            document.getElementById('setOutfitPanel').classList.toggle('hide', mode === 'mix');
+            document.getElementById('mixOutfitPanel').classList.toggle('hide', mode !== 'mix');
+            document.getElementById('btnModeSet').classList.toggle('active', mode === 'set');
+            document.getElementById('btnModeMix').classList.toggle('active', mode === 'mix');
+        }
+
+        function mixSetItem(cat, en) {
+            const h = document.getElementById('mix_' + cat);
+            if (h) h.value = en || '';
+            mixRefresh();
+        }
+
+        function mixOpenCat(cat) {
+            if (!(OPT.mix.items[cat] || []).length || mixIsBlocked(cat)) return;
+            mixActiveCat = cat;
+            document.getElementById('mixCatView').classList.remove('hide');
+            document.getElementById('mixActiveCat').textContent = mixCatLabel(cat);
+            document.getElementById('mixSearch').value = '';
+            document.querySelectorAll('.mix-sel-group').forEach(g => g.classList.toggle('hide', g.dataset.cat !== cat));
+            mixRenderList();
+            mixRefresh();
+        }
+
+        function mixCloseCat() {
+            mixActiveCat = '';
+            document.getElementById('mixCatView').classList.add('hide');
+            mixRefresh();
+        }
+
+        function mixRenderList() {
+            if (!mixActiveCat) return;
+            const cat = mixActiveCat;
+            const cur = mixGet(cat);
+            const list = document.getElementById('mixItemList');
+            const row = (v, label, checked) => `<label class="custom-radio mix-item px-3 py-3 border border-transparent hover:border-gray-700 hover:bg-gray-800 rounded transition-colors cursor-pointer">
+                        <input type="radio" name="_mixRadio" form="_mixnoform" value="${v}" ${checked ? 'checked' : ''} class="!w-4 !h-4 mt-0.5">
+                        <span class="text-sm item-text ml-2 text-white">${label}</span>
+                      </label>`;
+            let h = row('', 'Tidak dipilih', cur === '');
+            mixList(cat).forEach(it => { h += row(mixValOf(it), it.split('|')[0], mixValOf(it) === cur); });
+            list.innerHTML = h;
+            list.querySelectorAll('input[type="radio"]').forEach(r => {
+                r.addEventListener('change', e => { if (e.target.checked) mixSetItem(cat, e.target.value); });
+            });
+        }
+
+        function mixRefresh() {
+            if (mixActiveCat && mixIsBlocked(mixActiveCat)) {
+                mixActiveCat = '';
+                document.getElementById('mixCatView').classList.add('hide');
+            }
+            const box = document.getElementById('mixChips');
+            if (!box) return;
+            let h = '';
+            OPT.mix.cats.forEach(c => {
+                const soon = (OPT.mix.items[c.id] || []).length === 0;
+                const blocked = mixIsBlocked(c.id);
+                const has = mixGet(c.id) !== '' && !blocked;
+                const cls = 'mixchip' + ((soon || blocked) ? ' soon' : '') + (has ? ' has' : '') + (mixActiveCat === c.id ? ' active' : '');
+                const right = soon ? '<span class="text-xs italic">(segera)</span>' : (blocked ? '<span class="text-xs italic">(nonaktif)</span>' : `<span class="chip-count">${mixList(c.id).length}</span>`);
+                h += `<button type="button" class="${cls}" data-cat="${c.id}" ${(soon || blocked) ? 'disabled' : ''}><span class="font-bold">${c.label}</span>${right}</button>`;
+            });
+            box.innerHTML = h;
+            box.querySelectorAll('.mixchip').forEach(b => b.addEventListener('click', () => mixOpenCat(b.dataset.cat)));
+            document.getElementById('mixSetNote').classList.toggle('hide', mixGet('set') === '');
+
+            const chosen = [];
+            OPT.mix.cats.forEach(c => { const v = mixGet(c.id); if (v && !mixIsBlocked(c.id)) chosen.push(`${c.label}: ${mixLabelOf(c.id, v)}`); });
+            document.getElementById('mixSummaryText').innerHTML = chosen.length ? `Dipilih: <span class="text-gold">${chosen.join(', ')}</span>` : `Dipilih: <span class="text-gray-400">Tidak dipilih</span>`;
+            document.getElementById('btnMixClearAll').style.display = chosen.length ? 'inline-flex' : 'none';
+
+            const cv = mixActiveCat ? mixGet(mixActiveCat) : '';
+            document.getElementById('mixCatSummary').innerHTML = cv ? `Dipilih: <span class="text-gold">${mixLabelOf(mixActiveCat, cv)}</span>` : `Dipilih: <span class="text-gray-400">Tidak dipilih</span>`;
+            document.getElementById('btnMixCatClear').style.display = cv ? 'inline-flex' : 'none';
+        }
+
+        function mixOnGender() {
+            OPT.mix.cats.forEach(c => {
+                const v = mixGet(c.id);
+                if (v && !mixList(c.id).some(it => mixValOf(it) === v)) document.getElementById('mix_' + c.id).value = '';
+            });
+            if (mixActiveCat) mixRenderList();
+            mixRefresh();
+        }
+
+        function mixResetAll() {
+            OPT.mix.cats.forEach(c => {
+                const h = document.getElementById('mix_' + c.id); if (h) h.value = '';
+                ['color', 'material', 'pattern'].forEach(k => { const el = document.getElementById(`mix_${c.id}_${k}`); if (el) el.value = ''; });
+            });
+            mixActiveCat = '';
+            document.getElementById('mixCatView').classList.add('hide');
+            document.getElementById('mixSearch').value = '';
+            applyOutfitMode('set');
+            mixRefresh();
+        }
+
+        function mixRandomize() {
+            const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+            let any = false;
+            OPT.mix.cats.forEach(c => {
+                const list = mixList(c.id);
+                const h = document.getElementById('mix_' + c.id);
+                h.value = '';
+                ['color', 'material', 'pattern'].forEach(k => { document.getElementById(`mix_${c.id}_${k}`).value = ''; });
+                if (!list.length || Math.random() > 0.6) return;
+                h.value = mixValOf(pick(list)); any = true;
+                document.getElementById(`mix_${c.id}_color`).value = Math.random() > 0.4 ? mixValOf(pick(OPT.mix.colors)) : '';
+                document.getElementById(`mix_${c.id}_material`).value = Math.random() > 0.6 ? mixValOf(pick(OPT.mix.materials)) : '';
+                document.getElementById(`mix_${c.id}_pattern`).value = Math.random() > 0.7 ? mixValOf(pick(OPT.mix.patterns)) : '';
+            });
+            if (!any) { const l = mixList('top'); if (l.length) document.getElementById('mix_top').value = mixValOf(pick(l)); }
+            if (mixActiveCat) mixRenderList();
+            mixRefresh();
+        }
+
+        // Pilihan Mix and Match yang berlaku (dipakai prompt dan JSON)
+        function mixSelection(fd) {
+            const g = fd.get('gender') || 'female';
+            const valid = (cat, en) => en && mixListFor(cat, g).some(it => mixValOf(it) === en);
+            const setOn = valid('set', fd.get('mix_set'));
+            const out = [];
+            OPT.mix.cats.forEach(c => {
+                const en = fd.get('mix_' + c.id);
+                if (!valid(c.id, en)) return;
+                if ((c.id === 'top' || c.id === 'bottom') && setOn) return;
+                out.push({
+                    cat: c.id, label: c.label, en,
+                    color: fd.get('mix_' + c.id + '_color') || '',
+                    material: fd.get('mix_' + c.id + '_material') || '',
+                    pattern: fd.get('mix_' + c.id + '_pattern') || ''
+                });
+            });
+            return out;
+        }
+
+        function mixPhrase(s) {
+            let base = [s.color, s.material, s.en].filter(Boolean).join(' ');
+            const pw = (s.pattern || '').replace(/ pattern$/i, '').toLowerCase();
+            if (s.pattern && !s.en.toLowerCase().includes(pw)) base = /pattern$/i.test(s.pattern) ? `${base} with ${s.pattern}` : `${s.pattern} ${base}`;
+            return base;
+        }
+
+        function shapeMixJson(d, fd) {
+            Object.keys(d).filter(k => k.startsWith('mix_')).forEach(k => delete d[k]);
+            if (fd.get('outfitMode') !== 'mix') { delete d.outfitMode; return; }
+            delete d.outfit; delete d._outfitRadio;
+            d.outfitMode = 'mix';
+            const sel = mixSelection(fd);
+            if (sel.length) {
+                d.mixOutfit = {};
+                sel.forEach(x => {
+                    const o = { item: x.en };
+                    if (x.color) o.color = x.color;
+                    if (x.material) o.material = x.material;
+                    if (x.pattern) o.pattern = x.pattern;
+                    d.mixOutfit[x.cat] = o;
+                });
+            }
+        }
+
+        // ===== PANEL KOMPOSISI =====
+        const COMP_SUBS = [
+            { id: 'rasio', label: 'Rasio', hidden: 'aspectRatio', mode: 'required', icon: 'fa-crop-simple' },
+            { id: 'tata', label: 'Tata Letak', hidden: 'compLayout', mode: 'single', icon: 'fa-table-cells-large' },
+            { id: 'kamera', label: 'Kamera dan Lensa', hidden: 'compCamera', mode: 'group', icon: 'fa-camera' },
+            { id: 'bidikan', label: 'Bidikan dan Sudut', hidden: 'compShot', mode: 'group', icon: 'fa-video' },
+            { id: 'cahaya', label: 'Pencahayaan', hidden: 'compLighting', mode: 'single', icon: 'fa-lightbulb' },
+            { id: 'pose', label: 'Pose', hidden: 'compPose', mode: 'single', icon: 'fa-person' },
+            { id: 'latar', label: 'Lingkungan dan Latar', hidden: 'compEnv', mode: 'single', icon: 'fa-mountain-sun' }
+        ];
+        const COMP_DEFAULT_RATIO = '3:4';
+        // Rasio yang didukung model gambar (gemini-3.1-flash-image). Ubah daftar ini bila model berganti.
+        const COMP_SUPPORTED_RATIOS = ['1:1', '3:2', '2:3', '3:4', '1:4', '4:1', '4:3', '4:5', '5:4', '1:8', '8:1', '9:16', '16:9', '21:9', '9:21'];
+        const compActive = {};
+
+        function compSubOf(id) { return COMP_SUBS.find(x => x.id === id); }
+        function compGroups(sub) { return sub.id === 'rasio' ? { 'Rasio': (OPT.comp.rasio || []) } : (OPT.comp[sub.id] || {}); }
+        function compHasData(sub) { return Object.values(compGroups(sub)).some(a => a.length > 0); }
+        function compLabelOf(it) { return it.split('|')[0].trim(); }
+        function compTextOf(it) { const p = it.split('|'); return (p[1] || p[0]).trim(); }
+        function compTokenOf(it) { const m = compTextOf(it).match(/(\d+(?:\.\d+)?:\d+(?:\.\d+)?)/); return m ? m[1] : 'free'; }
+        function compKeyOf(sub, it) { return sub.id === 'rasio' ? compTokenOf(it) : compTextOf(it); }
+        function compEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+
+        // Ubah string tersimpan jadi daftar pilihan valid sesuai aturan sub-panel
+        function compResolve(sub, rawStr) {
+            const groups = compGroups(sub), order = Object.keys(groups), map = {};
+            order.forEach(g => groups[g].forEach(it => { const k = compKeyOf(sub, it); if (!(k in map)) map[k] = { key: k, group: g, item: it }; }));
+            const raw = String(rawStr || '').split('|').filter(Boolean);
+            let out = [];
+            const seen = new Set();
+            for (const k of raw) {
+                const m = map[k]; if (!m) continue;
+                if (sub.mode === 'group') { if (seen.has(m.group)) continue; seen.add(m.group); out.push(m); }
+                else { out = [m]; break; }
+            }
+            if (sub.mode === 'required' && !out.length && map[COMP_DEFAULT_RATIO]) out = [map[COMP_DEFAULT_RATIO]];
+            if (sub.mode === 'group') out.sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group));
+            return out;
+        }
+        function compRaw(sub) { const h = document.getElementById(sub.hidden); return compResolve(sub, h ? h.value : ''); }
+        function compSetRaw(sub, keys) { const h = document.getElementById(sub.hidden); if (h) h.value = keys.join('|'); }
+
+        function compRenderRatio(token) {
+            if (!token || token === 'free') return null;
+            const [a, b] = token.split(':').map(Number);
+            if (!a || !b) return null;
+            const t = a / b; let best = null, bd = Infinity;
+            COMP_SUPPORTED_RATIOS.forEach(r => { const [x, y] = r.split(':').map(Number); const dist = Math.abs(Math.log(t / (x / y))); if (dist < bd - 1e-9) { bd = dist; best = r; } });
+            return best;
+        }
+
+        // Ringkasan seluruh pilihan komposisi dari FormData (dipakai prompt dan JSON)
+        function compSelection(fd) {
+            const get = id => compResolve(compSubOf(id), fd.get(compSubOf(id).hidden) || '');
+            const rat = get('rasio')[0];
+            return {
+                layout: (get('tata')[0] ? compTextOf(get('tata')[0].item) : ''),
+                ratioText: rat ? compTextOf(rat.item) : '',
+                ratioToken: rat ? rat.key : COMP_DEFAULT_RATIO,
+                camera: get('kamera').map(m => compTextOf(m.item)),
+                shot: get('bidikan').map(m => compTextOf(m.item)),
+                lighting: (get('cahaya')[0] ? compTextOf(get('cahaya')[0].item) : ''),
+                pose: (get('pose')[0] ? compTextOf(get('pose')[0].item) : ''),
+                env: (get('latar')[0] ? compTextOf(get('latar')[0].item) : '')
+            };
+        }
+        function shapeCompJson(d, fd) {
+            ['compLayout', 'compCamera', 'compShot', 'compLighting', 'compPose', 'compEnv', 'consistencyLock'].forEach(k => delete d[k]);
+            const C = compSelection(fd);
+            d.aspectRatio = C.ratioToken;
+            const rr = compRenderRatio(C.ratioToken);
+            if (rr !== C.ratioToken) d.renderAspectRatio = rr || 'auto';
+            const comp = {};
+            if (C.layout) comp.layout = C.layout;
+            if (C.camera.length) comp.camera = C.camera;
+            if (C.shot.length) comp.shot = C.shot;
+            comp.lighting = C.lighting || 'soft neutral lighting';
+            if (C.pose) comp.pose = C.pose;
+            comp.environment = C.env || 'plain neutral background';
+            d.composition = comp;
+            if (fd.get('consistencyLock')) d.consistencyLock = true;
+        }
+
+        function initComposition() {
+            const w = document.getElementById('compPanelWrapper');
+            if (!w) return;
+            Object.keys(compActive).forEach(k => delete compActive[k]);
+            let h = '<div class="p-4 border border-gold-dim rounded-lg bg-black bg-opacity-30 shadow-inner flex flex-col gap-4">';
+            COMP_SUBS.forEach(sub => {
+                const has = compHasData(sub);
+                h += `<div id="comp_${sub.id}" style="${has ? '' : 'opacity:0.45;'}">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-gold uppercase tracking-widest"><i class="fas ${sub.icon} mr-2"></i>${sub.label}</span>
+                        ${has ? '' : '<span class="text-xs italic text-gray-400">(segera)</span>'}
+                    </div>`;
+                if (has) {
+                    h += `<div class="text-sm mb-2 bg-gray-900 bg-opacity-70 p-2 rounded border border-gray-700" id="compSum_${sub.id}"></div>`;
+                    if (sub.id !== 'rasio') h += `<div id="compChips_${sub.id}" class="grid grid-cols-2 gap-2"></div>`;
+                    h += `<div id="compView_${sub.id}" class="${sub.id === 'rasio' ? '' : 'hide'} ${sub.id === 'rasio' ? '' : 'border-t border-gray-700 pt-3 mt-3'}">
+                        <div class="flex items-center justify-between mb-3 ${sub.id === 'rasio' ? 'hide' : ''}">
+                            <span id="compGroupLabel_${sub.id}" class="text-sm font-bold text-gold uppercase tracking-widest bg-yellow-900 bg-opacity-20 px-3 py-1 rounded"></span>
+                            <button type="button" class="comp-back text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded transition-colors" data-sub="${sub.id}"><i class="fas fa-arrow-left mr-1"></i> Kembali</button>
+                        </div>
+                        <input type="text" id="compSearch_${sub.id}" class="comp-search custom-input !py-2 !px-3 mb-3 text-sm search-input" data-sub="${sub.id}" placeholder="Cari di ${sub.label.toLowerCase()}...">
+                        <div id="compList_${sub.id}" class="max-h-[280px] overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar" style="max-height:280px;overflow-y:auto;"></div>
+                        <p class="text-xs text-gray-500 italic mt-2">${sub.mode === 'required' ? 'Wajib dipilih satu rasio.' : (sub.mode === 'group' ? 'Boleh satu pilihan per kelompok.' : 'Boleh satu pilihan saja.')}</p>
+                    </div>`;
+                }
+                h += `<input type="hidden" name="${sub.hidden}" id="${sub.hidden}" value="${sub.id === 'rasio' ? COMP_DEFAULT_RATIO : ''}">`;
+                h += '</div>';
+            });
+            h += `<div class="flex items-center justify-between bg-black bg-opacity-30 p-3 rounded-lg border border-gold-dim">
+                    <div class="flex items-center gap-2 pr-2">
+                        <i class="fas fa-lock gold-text"></i>
+                        <span class="text-sm font-semibold text-gray-200">Kunci konsistensi</span>
+                        <span class="text-xs text-gray-400 italic">(Wajah dan outfit tetap sama)</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="consistencyLock" name="consistencyLock" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-600"></div>
+                    </label>
+                </div>`;
+            h += '</div>';
+            w.innerHTML = h;
+            if (!w.dataset.bound) {
+                w.dataset.bound = '1';
+                w.addEventListener('click', e => {
+                    const chip = e.target.closest('.comp-chip');
+                    if (chip) { compOpen(chip.dataset.sub, chip.dataset.group); return; }
+                    const back = e.target.closest('.comp-back');
+                    if (back) { compClose(back.dataset.sub); return; }
+                    const x = e.target.closest('.comp-x');
+                    if (x) { compRemove(x.dataset.sub, x.dataset.key); }
+                });
+                w.addEventListener('change', e => {
+                    const cb = e.target.closest('.comp-cb');
+                    if (cb) compToggle(cb.dataset.sub, cb.dataset.group, cb.dataset.key, cb.checked);
+                });
+                w.addEventListener('input', e => {
+                    const si = e.target.closest('.comp-search');
+                    if (!si) return;
+                    const q = si.value.toLowerCase();
+                    document.querySelectorAll('#compList_' + si.dataset.sub + ' .comp-row').forEach(r => { r.style.display = r.dataset.s.includes(q) ? 'flex' : 'none'; });
+                });
+            }
+            COMP_SUBS.forEach(sub => { if (compHasData(sub)) { if (sub.id === 'rasio') compOpen('rasio', 'Rasio'); else compRefresh(sub); } });
+        }
+
+        function compRefresh(sub) {
+            if (!compHasData(sub) || !document.getElementById('compSum_' + sub.id)) return;
+            const sel = compRaw(sub);
+            // ringkasan
+            const sum = document.getElementById('compSum_' + sub.id);
+            if (!sel.length) sum.innerHTML = 'Dipilih: <span class="text-gray-400">Tidak dipilih</span>';
+            else sum.innerHTML = '<span class="mr-1">Dipilih:</span>' + sel.map(m => {
+                const lab = compEsc(compLabelOf(m.item));
+                const xb = sub.mode === 'required' ? '' : ` <button type="button" class="comp-x text-red-400 hover:text-white" data-sub="${sub.id}" data-key="${compEsc(m.key)}" aria-label="Hapus ${lab}"><i class="fas fa-times"></i></button>`;
+                return `<span class="inline-flex items-center gap-1 bg-yellow-900 bg-opacity-30 text-gold px-2 py-0.5 rounded mr-1 mb-1 text-xs">${lab}${xb}</span>`;
+            }).join('');
+            // chip kelompok
+            const box = document.getElementById('compChips_' + sub.id);
+            if (box) {
+                const keys = sel.map(m => m.key);
+                let h = '';
+                Object.entries(compGroups(sub)).forEach(([g, arr]) => {
+                    const has = arr.some(it => keys.includes(compKeyOf(sub, it)));
+                    const cls = 'mixchip comp-chip' + (has ? ' has' : '') + (compActive[sub.id] === g ? ' active' : '');
+                    h += `<button type="button" class="${cls}" data-sub="${sub.id}" data-group="${compEsc(g)}"><span class="font-bold">${compEsc(g)}</span><span class="chip-count">${arr.length}</span></button>`;
+                });
+                box.innerHTML = h;
+            }
+        }
+
+        function compRenderList(sub) {
+            const g = compActive[sub.id]; if (!g) return;
+            const arr = compGroups(sub)[g] || [];
+            const keys = compRaw(sub).map(m => m.key);
+            const list = document.getElementById('compList_' + sub.id);
+            let h = '';
+            arr.forEach(it => {
+                const k = compKeyOf(sub, it);
+                h += `<label class="custom-radio comp-row px-3 py-3 border border-transparent hover:border-gray-700 hover:bg-gray-800 rounded transition-colors cursor-pointer" data-s="${compEsc(it.toLowerCase())}">
+                        <input type="checkbox" class="comp-cb !w-4 !h-4 mt-0.5" form="_compnoform" data-sub="${sub.id}" data-group="${compEsc(g)}" data-key="${compEsc(k)}" ${keys.includes(k) ? 'checked' : ''}>
+                        <span class="text-sm item-text ml-2 text-white">${compLabelOf(it)}</span>
+                      </label>`;
+            });
+            list.innerHTML = h;
+        }
+        function compSyncChecks(sub) {
+            const keys = compRaw(sub).map(m => m.key);
+            document.querySelectorAll('#compList_' + sub.id + ' .comp-cb').forEach(cb => { cb.checked = keys.includes(cb.dataset.key); });
+        }
+
+        function compOpen(subId, group) {
+            const sub = compSubOf(subId); if (!sub) return;
+            compActive[subId] = group;
+            const view = document.getElementById('compView_' + subId);
+            view.classList.remove('hide');
+            const gl = document.getElementById('compGroupLabel_' + subId); if (gl) gl.textContent = group;
+            document.getElementById('compSearch_' + subId).value = '';
+            compRenderList(sub);
+            compRefresh(sub);
+        }
+        function compClose(subId) {
+            const sub = compSubOf(subId); if (!sub || sub.id === 'rasio') return;
+            compActive[subId] = '';
+            document.getElementById('compView_' + subId).classList.add('hide');
+            compRefresh(sub);
+        }
+        function compToggle(subId, group, key, on) {
+            const sub = compSubOf(subId); if (!sub) return;
+            let keys = compRaw(sub).map(m => m.key);
+            if (sub.mode === 'required') { if (on) keys = [key]; }
+            else if (sub.mode === 'single') { keys = on ? [key] : []; }
+            else {
+                const grpItems = (compGroups(sub)[group] || []).map(it => compKeyOf(sub, it));
+                keys = keys.filter(k => !grpItems.includes(k));
+                if (on) keys.push(key);
+            }
+            compSetRaw(sub, keys);
+            compSyncChecks(sub);
+            compRefresh(sub);
+        }
+        function compRemove(subId, key) {
+            const sub = compSubOf(subId); if (!sub || sub.mode === 'required') return;
+            compSetRaw(sub, compRaw(sub).map(m => m.key).filter(k => k !== key));
+            compSyncChecks(sub);
+            compRefresh(sub);
+        }
+        function compRefreshAll() {
+            COMP_SUBS.forEach(sub => {
+                if (!compHasData(sub) || !document.getElementById('compSum_' + sub.id)) return;
+                compSetRaw(sub, compRaw(sub).map(m => m.key));   // rapikan nilai lama / tidak valid
+                if (compActive[sub.id]) compRenderList(sub);
+                compRefresh(sub);
+            });
+        }
+        function compResetAll() {
+            if (!document.getElementById('compPanelWrapper')) return;
+            COMP_SUBS.forEach(sub => {
+                const h = document.getElementById(sub.hidden); if (h) h.value = sub.id === 'rasio' ? COMP_DEFAULT_RATIO : '';
+                if (!compHasData(sub)) return;
+                const s = document.getElementById('compSearch_' + sub.id); if (s) s.value = '';
+                if (sub.id === 'rasio') { compOpen('rasio', 'Rasio'); return; }
+                compActive[sub.id] = '';
+                document.getElementById('compView_' + sub.id).classList.add('hide');
+                compRefresh(sub);
+            });
+            const cl = document.getElementById('consistencyLock'); if (cl) cl.checked = false;
+        }
+
+        // ===== PANEL AKSESORI =====
+        const ACC_CATS = [
+            { id: 'head', label: 'Kepala' },
+            { id: 'face', label: 'Wajah dan Mata' },
+            { id: 'ear', label: 'Telinga' },
+            { id: 'neck', label: 'Leher' },
+            { id: 'back', label: 'Bahu dan Punggung' },
+            { id: 'hand', label: 'Tangan dan Lengan' },
+            { id: 'waist', label: 'Pinggang' },
+            { id: 'leg', label: 'Kaki' },
+            { id: 'weapon', label: 'Senjata Biomech' },
+            { id: 'beast', label: 'Hewan Buas Mecha' },
+            { id: 'bio', label: 'Sayap, Ekor & Tentakel' },
+            { id: 'props', label: 'Props' }
+        ];
+        let accActiveCat = '';
+
+        function accListFor(cat, g) {
+            return (OPT.acc[cat] || []).filter(it => {
+                const t = (it.split('|')[2] || '').trim();
+                if (!t || g === 'androgynous') return true;
+                return g === 'female' ? t === 'W' : t === 'M';
+            });
+        }
+        function accList(cat) { return accListFor(cat, mixGender()); }
+        function accValOf(it) { const p = it.split('|'); return p[1] || p[0]; }
+        function accEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+        function accRaw() { const v = document.getElementById('accValue')?.value || ''; return v ? v.split('|').filter(Boolean) : []; }
+        function accSetRaw(arr) { const h = document.getElementById('accValue'); if (h) h.value = arr.join('|'); }
+        function accLabelOf(en) {
+            for (const c of ACC_CATS) {
+                const f = (OPT.acc[c.id] || []).find(it => accValOf(it) === en);
+                if (f) return f.split('|')[0];
+            }
+            return en;
+        }
+        function accCatLabel(cat) { const c = ACC_CATS.find(x => x.id === cat); return c ? c.label : cat; }
+        // Daftar English aksesori terpilih yang valid untuk gender, urut sesuai bagian tubuh
+        function accSelectionFor(g, raw) {
+            const out = [];
+            ACC_CATS.forEach(c => accListFor(c.id, g).forEach(it => {
+                const en = accValOf(it);
+                if (raw.includes(en) && !out.includes(en)) out.push(en);
+            }));
+            return out;
+        }
+        function accSelectionEn(fd) {
+            const raw = (fd.get('accessories') || '').split('|').filter(Boolean);
+            return accSelectionFor(fd.get('gender') || 'female', raw);
+        }
+        function shapeAccJson(d, fd) {
+            delete d.accessories;
+            const a = accSelectionEn(fd);
+            if (a.length) d.accessories = a;
+        }
+
+        function initAccessories() {
+            const w = document.getElementById('accPanelWrapper');
+            if (!w) return;
+            accActiveCat = '';
+            w.innerHTML = `
+                <div class="p-4 border border-gold-dim rounded-lg bg-black bg-opacity-30 shadow-inner">
+                    <div class="flex justify-between items-start gap-2 mb-3 bg-gray-900 bg-opacity-70 p-3 rounded border border-gray-700">
+                        <div class="text-sm font-semibold flex-1" id="accSummaryText">Dipilih: <span class="text-gray-400">Tidak dipilih</span></div>
+                        <button type="button" id="btnAccClearAll" class="text-red-400 hover:text-white hover:bg-red-900 text-xs px-2 py-1 rounded transition-colors" style="display:none;"><i class="fas fa-times mr-1"></i>Hapus semua aksesori</button>
+                    </div>
+                    <div id="accChips" class="grid grid-cols-2 gap-2 mb-1"></div>
+                    <div id="accCatView" class="hide border-t border-gray-700 pt-3 mt-3">
+                        <div class="flex items-center justify-between mb-3">
+                            <span id="accActiveCatLabel" class="text-sm font-bold text-gold uppercase tracking-widest bg-yellow-900 bg-opacity-20 px-3 py-1 rounded"></span>
+                            <button type="button" id="btnAccBack" class="text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded transition-colors"><i class="fas fa-arrow-left mr-1"></i> Kembali</button>
+                        </div>
+                        <input type="text" id="accSearch" class="custom-input !py-2 !px-3 mb-3 text-sm search-input" placeholder="Cari aksesori di bagian ini...">
+                        <div id="accItemList" class="max-h-[280px] overflow-y-auto flex flex-col gap-1 pr-1 custom-scrollbar"></div>
+                        <p class="text-xs text-gray-500 italic mt-2">Boleh pilih lebih dari satu aksesori.</p>
+                    </div>
+                    <input type="hidden" name="accessories" id="accValue" value="">
+                </div>`;
+            document.getElementById('btnAccClearAll').addEventListener('click', () => { accSetRaw([]); accSyncChecks(); accRefresh(); });
+            document.getElementById('btnAccBack').addEventListener('click', accCloseCat);
+            document.getElementById('accSearch').addEventListener('input', e => {
+                const q = e.target.value.toLowerCase();
+                document.querySelectorAll('#accItemList .acc-row').forEach(item => {
+                    const txt = item.querySelector('.item-text').textContent.toLowerCase();
+                    item.style.display = txt.includes(q) ? 'flex' : 'none';
+                });
+            });
+            document.getElementById('gender').addEventListener('change', accOnGender);
+            accRefresh();
+        }
+
+        function accOpenCat(cat) {
+            if (!(OPT.acc[cat] || []).length) return;
+            accActiveCat = cat;
+            document.getElementById('accCatView').classList.remove('hide');
+            document.getElementById('accActiveCatLabel').textContent = accCatLabel(cat);
+            document.getElementById('accSearch').value = '';
+            accRenderList();
+            accRefresh();
+        }
+
+        function accCloseCat() {
+            accActiveCat = '';
+            document.getElementById('accCatView').classList.add('hide');
+            accRefresh();
+        }
+
+        function accRenderList() {
+            if (!accActiveCat) return;
+            const sel = accRaw();
+            const list = document.getElementById('accItemList');
+            let h = '';
+            accList(accActiveCat).forEach(it => {
+                const en = accValOf(it);
+                h += `<label class="custom-radio acc-row px-3 py-3 border border-transparent hover:border-gray-700 hover:bg-gray-800 rounded transition-colors cursor-pointer">
+                        <input type="checkbox" form="_accnoform" value="${accEsc(en)}" ${sel.includes(en) ? 'checked' : ''} class="!w-4 !h-4 mt-0.5">
+                        <span class="text-sm item-text ml-2 text-white">${it.split('|')[0]}</span>
+                      </label>`;
+            });
+            list.innerHTML = h;
+            list.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', e => {
+                    const en = e.target.value;
+                    const cur = accRaw().filter(x => x !== en);
+                    if (e.target.checked) cur.push(en);
+                    accSetRaw(cur);
+                    accRefresh();
+                });
+            });
+        }
+
+        function accSyncChecks() {
+            const sel = accRaw();
+            document.querySelectorAll('#accItemList input[type="checkbox"]').forEach(cb => { cb.checked = sel.includes(cb.value); });
+        }
+
+        function accRefresh() {
+            const box = document.getElementById('accChips');
+            if (!box) return;
+            const g = mixGender();
+            const chosen = accSelectionFor(g, accRaw());
+            let h = '';
+            ACC_CATS.forEach(c => {
+                const soon = (OPT.acc[c.id] || []).length === 0;
+                const catEns = accList(c.id).map(accValOf);
+                const has = chosen.some(en => catEns.includes(en));
+                const cls = 'mixchip' + (soon ? ' soon' : '') + (has ? ' has' : '') + (accActiveCat === c.id ? ' active' : '');
+                const right = soon ? '<span class="text-xs italic">(segera)</span>' : `<span class="chip-count">${catEns.length}</span>`;
+                h += `<button type="button" class="${cls}" data-cat="${c.id}" ${soon ? 'disabled' : ''}><span class="font-bold">${c.label}</span>${right}</button>`;
+            });
+            box.innerHTML = h;
+            box.querySelectorAll('.mixchip').forEach(b => b.addEventListener('click', () => accOpenCat(b.dataset.cat)));
+
+            const sum = document.getElementById('accSummaryText');
+            if (chosen.length) {
+                sum.innerHTML = '<span class="mr-1">Dipilih:</span>' + chosen.map(en =>
+                    `<span class="inline-flex items-center gap-1 bg-yellow-900 bg-opacity-30 text-gold px-2 py-0.5 rounded mr-1 mb-1 text-xs">${accLabelOf(en)}<button type="button" class="acc-x text-red-400 hover:text-white" data-en="${accEsc(en)}" aria-label="Hapus ${accEsc(accLabelOf(en))}"><i class="fas fa-times"></i></button></span>`
+                ).join('');
+                sum.querySelectorAll('.acc-x').forEach(b => b.addEventListener('click', () => {
+                    const en = b.dataset.en;
+                    accSetRaw(accRaw().filter(x => x !== en));
+                    accSyncChecks();
+                    accRefresh();
+                }));
+            } else {
+                sum.innerHTML = 'Dipilih: <span class="text-gray-400">Tidak dipilih</span>';
+            }
+            document.getElementById('btnAccClearAll').style.display = chosen.length ? 'inline-flex' : 'none';
+        }
+
+        function accOnGender() {
+            if (!document.getElementById('accValue')) return;
+            accSetRaw(accSelectionFor(mixGender(), accRaw()));
+            if (accActiveCat) accRenderList();
+            accRefresh();
+        }
+
+        function accResetAll() {
+            if (!document.getElementById('accValue')) return;
+            accSetRaw([]);
+            accActiveCat = '';
+            document.getElementById('accCatView').classList.add('hide');
+            document.getElementById('accSearch').value = '';
+            accRefresh();
+        }
+
+        // ===== CIRI KHUSUS FANTASI: CHIP PER BAGIAN TUBUH =====
+        const TRAIT_GROUP_ORDER = ['Mata', 'Tanduk', 'Sayap', 'Ekor', 'Telinga & Antena', 'Rambut & Janggut', 'Wajah & Mulut', 'Kulit & Bulu', 'Tangan & Kaki', 'Tubuh & Bentuk', 'Aura & Efek', 'Hiasan'];
+
+        function buildTraitChips(traits, rv) {
+            const groups = {};
+            traits.forEach(t => { const p = t.split('|'); const g = (p[2] || 'Lainnya').trim(); (groups[g] = groups[g] || []).push(p); });
+            const order = TRAIT_GROUP_ORDER.filter(g => groups[g]).concat(Object.keys(groups).filter(g => !TRAIT_GROUP_ORDER.includes(g)));
+            let h = `<div class="flex flex-col gap-2 w-full mt-2" id="traitBox"><label class="text-xs font-bold uppercase tracking-wider text-gray-400">Ciri Khusus: ${rv}</label>
+                <div class="flex justify-between items-center bg-gray-900 bg-opacity-70 p-3 rounded border border-gray-700">
+                    <span class="text-sm font-semibold" id="traitSummaryText">Dipilih: <span class="text-gray-400">Tidak ada</span></span>
+                    <button type="button" id="btnTraitClear" class="text-red-400 hover:text-white hover:bg-red-900 text-xs px-2 py-1 rounded transition-colors" style="display:none;"><i class="fas fa-times mr-1"></i>Hapus</button>
+                </div>
+                <div id="traitChips" class="grid grid-cols-2 gap-2">`;
+            order.forEach(g => {
+                h += `<button type="button" class="mixchip" data-tgroup="${g}"><span class="font-bold">${g}</span><span class="chip-count">${groups[g].length}</span></button>`;
+            });
+            h += `</div><div id="traitPanels">`;
+            order.forEach(g => {
+                h += `<div class="trait-panel hide border-t border-gray-700 pt-3 mt-2" data-tgroup="${g}">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-bold text-gold uppercase tracking-widest bg-yellow-900 bg-opacity-20 px-3 py-1 rounded">${g}</span>
+                        <button type="button" class="btn-trait-close text-xs text-gray-400 hover:text-white px-2 py-1 bg-gray-800 rounded transition-colors"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[280px] overflow-y-auto pr-1 custom-scrollbar">`;
+                groups[g].forEach(p => { h += `<label class="custom-radio"><input type="checkbox" name="dynamicFantasyTraits[]" value="${p[1] || p[0]}"> <span class="text-xs">${p[0]}</span></label>`; });
+                h += `</div></div>`;
+            });
+            return h + `</div></div>`;
+        }
+
+        function initTraitChips() {
+            const box = document.getElementById('traitBox'); if (!box) return;
+            box.querySelectorAll('#traitChips .mixchip').forEach(btn => btn.addEventListener('click', () => {
+                const panel = box.querySelector(`.trait-panel[data-tgroup="${btn.dataset.tgroup}"]`);
+                const wasOpen = !panel.classList.contains('hide');
+                box.querySelectorAll('.trait-panel').forEach(p => p.classList.add('hide'));
+                if (!wasOpen) panel.classList.remove('hide');
+                traitRefresh();
+            }));
+            box.querySelectorAll('.btn-trait-close').forEach(btn => btn.addEventListener('click', () => {
+                box.querySelectorAll('.trait-panel').forEach(p => p.classList.add('hide'));
+                traitRefresh();
+            }));
+            box.addEventListener('change', e => { if (e.target.matches('input[type="checkbox"]')) traitRefresh(); });
+            document.getElementById('btnTraitClear').addEventListener('click', () => {
+                box.querySelectorAll('input[type="checkbox"]').forEach(c => { c.checked = false; });
+                traitRefresh();
+            });
+            traitRefresh();
+        }
+
+        function traitRefresh() {
+            const box = document.getElementById('traitBox'); if (!box) return;
+            const chosen = [];
+            box.querySelectorAll('.trait-panel').forEach(panel => {
+                const g = panel.dataset.tgroup;
+                const boxes = panel.querySelectorAll('input[type="checkbox"]');
+                let n = 0;
+                boxes.forEach(c => { if (c.checked) { n++; chosen.push(c.nextElementSibling.textContent.trim()); } });
+                const chip = box.querySelector(`#traitChips .mixchip[data-tgroup="${g}"]`);
+                chip.classList.toggle('has', n > 0);
+                chip.classList.toggle('active', !panel.classList.contains('hide'));
+                chip.querySelector('.chip-count').textContent = n > 0 ? `${n}/${boxes.length}` : `${boxes.length}`;
+            });
+            document.getElementById('traitSummaryText').innerHTML = chosen.length ? `Dipilih: <span class="text-gold">${chosen.join(', ')}</span>` : `Dipilih: <span class="text-gray-400">Tidak ada</span>`;
+            document.getElementById('btnTraitClear').style.display = chosen.length ? 'inline-flex' : 'none';
+        }
+
+        // Bersihkan isian yang tidak relevan dari JSON (panel yang sedang tersembunyi)
+        function pruneStaleJson(d, fd) {
+            const mode = fd.get('mode');
+            if (mode === 'fantasy') {
+                ['country', 'indonesiaTribe', 'skinTone', 'faceShape'].forEach(k => delete d[k]);
+                if (document.getElementById('panelBeastkinLevel').classList.contains('hide')) delete d.beastkinLevel;
+            } else {
+                ['fantasyRace', 'beastkinLevel', 'dynamicFantasyTraits'].forEach(k => delete d[k]);
+            }
+            const g = fd.get('gender');
+            if (g === 'female') { delete d.hairMale; delete d.facialHair; }
+            else if (g === 'male') { delete d.hairFemale; }
+        }
+
+        function getSelectedAccessories(fd) {
+            const traits = fd.getAll('dynamicFantasyTraits[]');
+            const accKeywords = ['crown', 'goggles', 'ornament', 'accessories', 'club', 'nose ring', 'chain', 'halo', 'ring', 'hat', 'glasses', 'bag', 'jewelry', 'mask'];
+            const rx = new RegExp('\\b(?:' + accKeywords.join('|') + ')s?\\b', 'i');
+            const merged = traits.filter(t => rx.test(t));
+            accSelectionEn(fd).forEach(a => { if (!merged.includes(a)) merged.push(a); });
+            return merged;
+        }
+
+        function getOutfitParts(fd) {
+            let wearParts = [];
+            if (fd.get('outfitMode') === 'mix') mixSelection(fd).forEach(x => wearParts.push(mixPhrase(x)));
+            else if (fd.get('outfit')) wearParts.push(fd.get('outfit'));
+
+            let wearDetails = [
+                fd.get('outfitFit'),
+                fd.get('outfitSleeve'),
+                fd.get('outfitNeck'),
+                fd.get('outfitClosure'),
+                fd.get('outfitStyling') ? "styled as " + fd.get('outfitStyling') : null,
+                fd.get('outfitTopLength') ? fd.get('outfitTopLength') + " top" : null,
+                fd.get('outfitBottomLength') ? fd.get('outfitBottomLength') + " bottom" : null,
+                fd.get('outfitBottomCut') ? fd.get('outfitBottomCut') + " cut" : null
+            ].filter(Boolean);
+
+            if (wearDetails.length > 0) wearParts.push(wearDetails.join(', '));
+            return wearParts;
+        }
+
+        function buildConstraintsSentence(fd) {
+            const wearParts = getOutfitParts(fd);
+            const selectedAccessories = getSelectedAccessories(fd);
+
+            if (wearParts.length > 0) {
+                const outfitSummary = wearParts.join(', ');
+                if (selectedAccessories.length > 0) {
+                    return `The character wears exactly: ${outfitSummary}. Do not add any clothing or props that are not listed above. Only these accessories: ${selectedAccessories.join(', ')}. Ears, neck and hands bare unless listed.`;
+                }
+                return `The character wears exactly: ${outfitSummary}. Do not add any clothing, accessories, jewelry, hats, glasses, bags, or props that are not listed above. Ears, neck and hands bare unless listed.`;
+            }
+
+            // Tidak ada outfit dipilih: jangan melarang pakaian, cukup batasi aksesori
+            if (selectedAccessories.length > 0) {
+                return `The character wears plain modest everyday clothing unless listed otherwise above. Do not add any props that are not listed above. Only these accessories: ${selectedAccessories.join(', ')}. Ears, neck and hands bare unless listed.`;
+            }
+            return `The character wears plain modest everyday clothing unless listed otherwise above. Do not add any accessories, jewelry, hats, glasses, bags, or props that are not listed above. Ears, neck and hands bare unless listed.`;
+        }
+
+        function constructPrompt(fd) {
+            const style = fd.get('visualStyle');
+            const m = fd.get('mode');
+            const g = fd.get('gender');
+            const a = fd.get('age');
+            const quality = document.getElementById('qualityMode')?.checked;
+
+            // 1) Gaya visual (+ kalimat keamanan, selalu ada)
+            let p = quality
+                ? `${style}. A highly detailed, masterpiece image of an adult character. Fully clothed. `
+                : `${style}. An image of an adult character. Fully clothed. `;
+
+            // 2) Subjek: gender, usia, asal, ciri khusus
+            let subParts = [];
+            subParts.push(`${a} ${g}`);
+
+            if (m === 'fantasy') {
+                const r = fd.get('fantasyRace');
+                if (r) {
+                    let raceStr = r;
+                    if (!document.getElementById('panelBeastkinLevel').classList.contains('hide') && fd.get('beastkinLevel')) {
+                        const bl = fd.get('beastkinLevel');
+                        if (bl === 'kemonomimi') raceStr += " (mostly human anatomy, only has animal ears and tail)";
+                        else if (bl === 'standard') raceStr += " (human face with animal features like ears/tail/claws, NOT a full animal face)";
+                        else if (bl === 'anthro') raceStr += " (anthropomorphic full animal face and fur)";
+                        else if (bl === 'hybrid') raceStr += " (monstrous hybrid)";
+                    }
+                    subParts.push(`fantasy race: ${raceStr}`);
+                } else {
+                    subParts.push(`humanoid`);
+                }
+                const t = fd.getAll('dynamicFantasyTraits[]');
+                if (t.length > 0) subParts.push(`physical traits: ${t.join(', ')}`);
+            } else {
+                const tr = fd.get('indonesiaTribe');
+                const ctry = fd.get('country');
+                if (tr) subParts.push(tr);
+                else if (ctry) subParts.push(ctry);
+
+                if (fd.get('skinTone')) subParts.push(fd.get('skinTone'));
+                if (fd.get('faceShape')) subParts.push(fd.get('faceShape'));
+            }
+
+            p += `Subject identity: ${subParts.join(', ')}. `;
+
+            // 3) Ukuran dan proporsi
+            let physParts = [];
+            if (fd.get('heightCm')) physParts.push(`exactly ${fd.get('heightCm')} cm tall`);
+            if (fd.get('scaleRef') && fd.get('scaleRef') !== 'none') physParts.push(`compared to a ${fd.get('scaleRef')} for scale reference`);
+            if (fd.get('bodyType')) physParts.push(`${fd.get('bodyType')} body type`);
+            if (fd.get('proportion')) physParts.push(`${fd.get('proportion')} proportions`);
+
+            if (physParts.length > 0) p += `Physical attributes: ${physParts.join(', ')}. `;
+
+            // 4) Wajah: ekspresi, makeup
+            let faceParts = [];
+            if (fd.get('expression')) faceParts.push(fd.get('expression'));
+            if (fd.get('makeup')) faceParts.push(fd.get('makeup'));
+            if (faceParts.length > 0) p += `Facial details: ${faceParts.join(', ')}. `;
+
+            // 5) Rambut
+            let hairParts = [];
+            if (fd.get('hairColor')) hairParts.push(`${fd.get('hairColor')} colored hair`);
+
+            let hairStyle = "";
+            if (g === 'female') hairStyle = fd.get('hairFemale');
+            else if (g === 'male') {
+                let hp = [];
+                if (fd.get('hairMale')) hp.push(fd.get('hairMale'));
+                if (fd.get('facialHair')) hp.push(fd.get('facialHair'));
+                hairStyle = hp.join(' and ');
+            } else {
+                let hp = [];
+                if (fd.get('hairFemale')) hp.push(fd.get('hairFemale'));
+                if (fd.get('hairMale')) hp.push(fd.get('hairMale'));
+                hairStyle = hp.join(' or ');
+            }
+            if (hairStyle) hairParts.push(hairStyle);
+
+            if (hairParts.length > 0) p += `Hair: ${hairParts.join(', ')}. `;
+
+            // 6) OUTFIT (paling detail): nama set, komponen, detail pemakaian
+            const wearParts = getOutfitParts(fd);
+            if (wearParts.length > 0) {
+                p += `Wearing: ${wearParts.join(', ')}`;
+                if (quality) p += `, detailed clothing cut and styling, realistic fabric material textures, premium wardrobe quality, and natural level of wear and tear`;
+                p += `. `;
+            }
+
+            // 6b) Aksesori dari panel Aksesori (berlaku untuk Set lengkap dan Mix and Match)
+            const panelAcc = accSelectionEn(fd);
+            if (panelAcc.length > 0) p += `Accessories: ${panelAcc.join(', ')}. `;
+
+            // 7) Komposisi: tata letak, rasio, kamera, bidikan dan sudut, pencahayaan, pose, lingkungan
+            const C = compSelection(fd);
+            if (C.layout) p += `Layout: ${C.layout}. `;
+            if (C.ratioText) p += `Format: ${C.ratioText}. `;
+            if (C.camera.length > 0) p += `Camera: ${C.camera.join('; ')}. `;
+            if (C.shot.length > 0) p += `Shot and angle: ${C.shot.join('; ')}. `;
+            p += `Lighting: ${C.lighting || 'soft neutral lighting'}. `;
+            if (C.pose) p += `Pose: ${C.pose}. `;
+            p += `Background: ${C.env || 'plain neutral background'}. `;
+            if (fd.get('consistencyLock')) p += `Consistency: consistent features across all frames, same person, full identity lock, outfit match, no drift, uniform features. `;
+
+            // 8) Kualitas (hanya bila sakelar kualitas ON)
+            if (quality) p += `Quality: matching the visual style perfectly. Technical: High resolution, highly detailed, perfect anatomy, masterpiece quality. `;
+
+            p += `Negative prompt: nsfw, bad anatomy, missing fingers, extra digits, watermark, text, signature`;
+
+            if (["photorealistic", "hyperrealistic 8K", "cinematic film still", "studio portrait", "documentary photo", "macro photo"].includes(style)) p += ", cartoon, anime, illustration, 3d render, painting";
+            else if (["anime style", "semi-realistic anime style", "black and white manga style", "chibi style", "2D cartoon style", "western comic book style", "webtoon manhwa style", "cel-shaded style"].includes(style)) p += ", photo, realistic, 3d render, cosplay";
+
+            if (m === 'fantasy' && !document.getElementById('panelBeastkinLevel').classList.contains('hide') && ['standard', 'kemonomimi'].includes(fd.get('beastkinLevel'))) p += ", full animal face, snout, muzzle, furry face";
+
+            p += ".";
+
+            // 9) Constraints (hanya bila Mode ketat aktif)
+            if (document.getElementById('strictMode')?.checked) {
+                const constraint = buildConstraintsSentence(fd);
+                p += " " + constraint;
+            }
+
+            return p;
+        }
+
+        let lastPrompt = '', lastRatio = '1:1', lastEngine = '';
+
+        const tabs = document.querySelectorAll('.tab-btn'), tabC = document.querySelectorAll('.tab-content'), st = { empty: document.getElementById('imageStateEmpty'), loading: document.getElementById('imageStateLoading'), error: document.getElementById('imageStateError'), result: document.getElementById('imageStateResult') }, btnGen = document.getElementById('btnGenerate'), resImg = document.getElementById('resultImage'), engNot = document.getElementById('engineNotice');
+        tabs.forEach(t => t.addEventListener('click', () => { tabs.forEach(x => x.classList.remove('active')); tabC.forEach(c => c.classList.remove('active')); t.classList.add('active'); document.getElementById(t.dataset.tab).classList.add('active'); }));
+
+        function setUI(s) { Object.values(st).forEach(el => el.classList.add('hide')); if (st[s]) st[s].classList.remove('hide'); btnGen.disabled = (s === 'loading'); btnGen.innerHTML = s === 'loading' ? '<i class="fas fa-spinner fa-spin"></i> Merender...' : '<i class="fas fa-magic"></i> Render Karakter'; }
+        function showToast(m) { const t = document.getElementById('toastMessage'); document.getElementById('toastText').textContent = m; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); }
+
+        function vbKey() {
+            let k = ''; try { k = localStorage.getItem('vb_key') || ''; } catch (x) {}
+            if (!k) { k = (prompt('Tempel API key Google AI Studio kamu (disimpan hanya di browser ini, jangan dibagikan):') || '').trim(); if (k) { try { localStorage.setItem('vb_key', k); } catch (x) {} } }
+            return k;
+        }
+        async function fetchImage(p, r, e) {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${encodeURIComponent(vbKey())}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: p }] }], generationConfig: Object.assign({ responseModalities: ['IMAGE'] }, r ? { imageConfig: { aspectRatio: r } } : {}) }) });
+            const txt = await res.text();
+            if (!res.ok) throw new Error(JSON.parse(txt)?.error?.message || `HTTP Error ${res.status}`);
+            const data = JSON.parse(txt), part = data?.candidates?.[0]?.content?.parts?.find(x => x.inlineData);
+            if (part) return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            throw new Error(data?.candidates?.[0]?.finishReason ? `Proses dibatalkan: ${data.candidates[0].finishReason}` : "Gambar gagal diproses.");
+        }
+
+        document.getElementById('characterForm').addEventListener('submit', async e => {
+            e.preventDefault(); tabs[0].click(); setUI('loading'); engNot.textContent = "";
+            const fd = new FormData(e.target);
+            
+            const isStrict = document.getElementById('strictMode')?.checked;
+            const dRaw = Object.fromEntries(fd.entries());
+            dRaw.dynamicFantasyTraits = fd.getAll('dynamicFantasyTraits[]');
+            
+            const d = Object.fromEntries(Object.entries(dRaw).filter(([_, v]) => v !== "" && (Array.isArray(v) ? v.length > 0 : true)));
+
+            if (isStrict) {
+                delete d.strictMode;
+                d.constraints = buildConstraintsSentence(fd);
+            } else {
+                delete d.strictMode;
+                delete d.constraints;
+            }
+
+            delete d.qualityMode;
+            delete d._outfitRadio;
+            shapeMixJson(d, fd);
+            shapeAccJson(d, fd);
+            shapeCompJson(d, fd);
+            pruneStaleJson(d, fd);
+            const p = constructPrompt(fd);
+            const renderRatio = compRenderRatio(compSelection(fd).ratioToken);
+            lastPrompt = p; lastRatio = renderRatio; lastEngine = fd.get('engine');
+            document.getElementById('promptText').value = p; 
+            document.getElementById('jsonText').value = JSON.stringify(d, null, 2);
+            
+            try {
+                const img = await fetchImage(p, renderRatio, fd.get('engine'));
+                resImg.src = img; resImg.style.display = 'block'; document.getElementById('btnDownload').href = img;
+                const [w, h] = (renderRatio || '1:1').split(':').map(Number); const rt = w / h;
+                resImg.style.maxHeight = rt < 1 ? '70vh' : rt > 1 ? 'auto' : '60vh'; resImg.style.maxWidth = '100%';
+                setUI('result'); engNot.textContent = `Berhasil dirender.`;
+            } catch (err) { document.getElementById('errorMessage').textContent = err.message || "Gagal menghubungi server."; setUI('error'); }
+        });
+
+        ['btnCopyPrompt', 'btnCopyJson'].forEach(id => document.getElementById(id).addEventListener('click', e => {
+            const txt = document.getElementById(id.replace('btnCopy', '').toLowerCase() + 'Text').value, ta = document.createElement("textarea");
+            ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            const btn = e.currentTarget, orig = btn.innerHTML; btn.innerHTML = '<i class="fas fa-check text-green-400"></i>'; setTimeout(() => btn.innerHTML = orig, 2000);
+        }));
+        document.getElementById('btnRerender').addEventListener('click', async () => {
+            if (!lastPrompt) return;
+            setUI('loading'); engNot.textContent = "";
+            try {
+                const img = await fetchImage(lastPrompt, lastRatio, lastEngine);
+                resImg.src = img; resImg.style.display = 'block'; document.getElementById('btnDownload').href = img;
+                setUI('result'); engNot.textContent = `Variasi baru berhasil dirender.`;
+            } catch (err) { document.getElementById('errorMessage').textContent = err.message || "Gagal menghubungi server."; setUI('error'); }
+        });
+        document.getElementById('btnRetry').addEventListener('click', () => document.getElementById('btnGenerate').click());
+        
+        renderForm();
+    </script>
+
+    <script>
+    // Live background: marmer hitam diamond dengan urat emas tipis (tanpa library, tanpa gambar eksternal)
+    (function () {
+        const cv = document.getElementById('vbBg');
+        if (!cv || !cv.getContext) return;
+        const ctx = cv.getContext('2d');
+        const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let W = 0, H = 0, S = 1, base, vein, tmp, tctx, lastW = 0, lastH = 0, raf = 0, lastT = 0;
+
+        function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+        function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+
+        function build() {
+            W = window.innerWidth; H = window.innerHeight;
+            S = Math.min(window.devicePixelRatio || 1, 1.25);
+            const pw = Math.round(W * S), ph = Math.round(H * S);
+            cv.width = pw; cv.height = ph;
+            base = mk(pw, ph); vein = mk(pw, ph); tmp = mk(pw, ph); tctx = tmp.getContext('2d');
+            const R = rng(20261006), u = Math.min(W, H) / 400 * S + 0.0001;
+
+            // --- dasar marmer hitam + faset diamond
+            const b = base.getContext('2d');
+            b.fillStyle = '#040405'; b.fillRect(0, 0, pw, ph);
+            for (let i = 0; i < 9; i++) {
+                const x = R() * pw, y = R() * ph, r = (0.25 + R() * 0.45) * Math.max(pw, ph);
+                const g = b.createRadialGradient(x, y, 0, x, y, r);
+                g.addColorStop(0, 'rgba(46,43,38,' + (0.12 + R() * 0.12) + ')'); g.addColorStop(1, 'rgba(0,0,0,0)');
+                b.fillStyle = g; b.fillRect(0, 0, pw, ph);
+            }
+            const cell = 120 * S * Math.max(0.8, Math.min(W, 700) / 420);
+            b.lineWidth = 1; b.strokeStyle = 'rgba(255,255,255,0.028)';
+            b.beginPath();
+            for (let k = -ph; k < pw + ph; k += cell) { b.moveTo(k, 0); b.lineTo(k + ph, ph); b.moveTo(k + ph, 0); b.lineTo(k, ph); }
+            b.stroke();
+            for (let i = 0; i < 28; i++) {            // facet diamond terang tipis
+                const cx = R() * pw, cy = R() * ph, d = cell * (0.4 + R() * 0.9);
+                b.beginPath(); b.moveTo(cx, cy - d); b.lineTo(cx + d * 0.6, cy); b.lineTo(cx, cy + d); b.lineTo(cx - d * 0.6, cy); b.closePath();
+                b.fillStyle = 'rgba(255,255,255,' + (0.006 + R() * 0.012) + ')'; b.fill();
+            }
+            for (let i = 0; i < 160; i++) {           // kilau butiran
+                b.fillStyle = 'rgba(255,240,200,' + (0.05 + R() * 0.18) + ')';
+                b.fillRect(R() * pw, R() * ph, S, S);
+            }
+            const vg = b.createRadialGradient(pw / 2, ph / 2, Math.min(pw, ph) * 0.3, pw / 2, ph / 2, Math.max(pw, ph) * 0.8);
+            vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+            b.fillStyle = vg; b.fillRect(0, 0, pw, ph);
+
+            // --- urat emas bercabang
+            const v = vein.getContext('2d');
+            v.lineCap = 'round'; v.lineJoin = 'round';
+            const queue = [];
+            const nMain = 8 + Math.floor(R() * 3);
+            for (let i = 0; i < nMain; i++) {
+                const edge = Math.floor(R() * 4); let x, y, a;
+                if (edge === 0) { x = R() * pw; y = -10; a = Math.PI / 2 + (R() - 0.5) * 1.2; }
+                else if (edge === 1) { x = pw + 10; y = R() * ph; a = Math.PI + (R() - 0.5) * 1.2; }
+                else if (edge === 2) { x = R() * pw; y = ph + 10; a = -Math.PI / 2 + (R() - 0.5) * 1.2; }
+                else { x = -10; y = R() * ph; a = (R() - 0.5) * 1.2; }
+                queue.push({ x, y, a, len: Math.max(pw, ph) * (0.7 + R() * 0.5), w: (1.1 + R() * 0.8) * u, d: 0 });
+            }
+            let guard = 0;
+            while (queue.length && guard++ < 160) {
+                const q = queue.shift(), pts = [[q.x, q.y]];
+                let x = q.x, y = q.y, a = q.a;
+                const step = (9 + R() * 14) * u, n = Math.floor(q.len / step);
+                for (let i = 0; i < n; i++) {
+                    a += (R() - 0.5) * 0.7; x += Math.cos(a) * step; y += Math.sin(a) * step; pts.push([x, y]);
+                    if (q.d < 4 && R() < 0.075) queue.push({ x, y, a: a + (R() < 0.5 ? -1 : 1) * (0.4 + R() * 0.8), len: q.len * (0.25 + R() * 0.35), w: q.w * 0.68, d: q.d + 1 });
+                    if (x < -40 || y < -40 || x > pw + 40 || y > ph + 40) break;
+                }
+                const path = () => { v.beginPath(); v.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) v.lineTo(pts[i][0], pts[i][1]); };
+                v.shadowBlur = 0; path(); v.strokeStyle = 'rgba(212,175,55,0.10)'; v.lineWidth = q.w * 4; v.stroke();
+                v.shadowColor = 'rgba(240,200,90,0.9)'; v.shadowBlur = 7 * S; path();
+                v.strokeStyle = q.d === 0 ? 'rgba(236,196,92,0.88)' : 'rgba(214,172,64,0.7)'; v.lineWidth = Math.max(q.w, 0.6 * S); v.stroke();
+                v.shadowBlur = 0; path(); v.strokeStyle = 'rgba(255,238,180,0.55)'; v.lineWidth = Math.max(q.w * 0.35, 0.4 * S); v.stroke();
+            }
+            lastW = W; lastH = H;
+        }
+
+        function frame(t) {
+            raf = 0;
+            if (t - lastT < 40) { raf = requestAnimationFrame(frame); return; }   // ~25 fps
+            lastT = t;
+            draw(t / 1000 * 3);
+            raf = requestAnimationFrame(frame);
+        }
+
+        function draw(sec) {
+            const pw = cv.width, ph = cv.height;
+            ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+            ctx.drawImage(base, 0, 0);
+            ctx.globalAlpha = 0.62 + 0.14 * Math.sin(sec * 0.7);
+            ctx.drawImage(vein, 0, 0);
+            ctx.globalAlpha = 1;
+            // kilau cahaya yang bergerak di sepanjang urat
+            tctx.globalCompositeOperation = 'source-over'; tctx.clearRect(0, 0, pw, ph);
+            const R0 = Math.max(pw, ph) * 0.42;
+            [[0.11, 0.07, 0.0, 1], [0.08, 0.13, 2.1, 0.8]].forEach(p => {
+                const x = pw * (0.5 + 0.55 * Math.sin(sec * p[0] + p[2])), y = ph * (0.5 + 0.55 * Math.cos(sec * p[1] + p[2] * 1.7));
+                const g = tctx.createRadialGradient(x, y, 0, x, y, R0);
+                g.addColorStop(0, 'rgba(255,236,170,' + (0.95 * p[3]) + ')'); g.addColorStop(1, 'rgba(255,236,170,0)');
+                tctx.fillStyle = g; tctx.fillRect(0, 0, pw, ph);
+            });
+            tctx.globalCompositeOperation = 'destination-in'; tctx.drawImage(vein, 0, 0);
+            ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(tmp, 0, 0);
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        function start() { cancelAnimationFrame(raf); build(); if (reduce) { draw(3); } else { raf = requestAnimationFrame(frame); } }
+        let rt = 0;
+        window.addEventListener('resize', () => {
+            clearTimeout(rt);
+            rt = setTimeout(() => { if (window.innerWidth !== lastW || Math.abs(window.innerHeight - lastH) > 160) start(); }, 250);
+        });
+        start();
+    })();
+    </script>
+</body>
+</html>

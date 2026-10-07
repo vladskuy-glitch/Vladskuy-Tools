@@ -5,6 +5,7 @@
 const LINKS = {
   "Text to Video": "vb-prompt-studio.html",
   "Image to Video": "vb-prompt-studio.html",
+  "Character Generator": "vb-character-generator.html",
 };
 
 /* ===== 2. DAFTAR MODUL (tidak perlu diubah) ===== */
@@ -29,7 +30,7 @@ const MODULES = [
     {nama:"Video Sinematik", ket:"AI menyusun cerita dan storyboard dari judul", tipe:"C"}]},
   {no:"04", nama:"Modifying Character", desc:"Ubah dan atur karakter AI",
    guna:"Membuat dan mengubah karakter AI yang konsisten di semua konten.", items:[
-    {nama:"Character Generator", ket:"Form karakter lalu render", tipe:"C"},
+    {nama:"Character Generator", ket:"Form karakter lengkap lalu render", tipe:"W"},
     {nama:"Character Clone", ket:"Karakter konsisten dari foto referensi", tipe:"C"},
     {nama:"Ganti Outfit dan Gaya", ket:"Katalog outfit dan gaya siap salin", tipe:"W"},
     {nama:"Influencer Maker", ket:"Persona influencer lengkap", tipe:"C"}]},
