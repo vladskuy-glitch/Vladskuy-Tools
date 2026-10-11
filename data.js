@@ -5,7 +5,7 @@
 const LINKS = {
   "Text to Video": "vb-prompt-studio.html",
   "Image to Video": "vb-prompt-studio.html",
-  "Character Generator": "https://share.gemini.google/RisdLxNMtBGB",
+  "Character Generator": "https://share.gemini.google/idDXwFCuTDPu",
 };
 
 /* ===== 2. DAFTAR MODUL (tidak perlu diubah) ===== */
