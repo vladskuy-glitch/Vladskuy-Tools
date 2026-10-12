@@ -7,7 +7,7 @@ const LINKS = {
   "Image to Video": "vb-prompt-studio.html",
   "Character Generator": "https://share.gemini.google/idDXwFCuTDPu",
    "UGC Video": "https://share.gemini.google/vX76MUxzFp55", 
-   "Video Cinematic": "https://flow.google.com/shared/tool/2f0855a2-ca18-4e1a-a6c4-e0efc9d823b7"
+   "Video Cinematic": "https://flow.google.com/shared/tool/2f0855a2-ca18-4e1a-a6c4-e0efc9d823b7",
 };
 
 /* ===== 2. DAFTAR MODUL (tidak perlu diubah) ===== */
