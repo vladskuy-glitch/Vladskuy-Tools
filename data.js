@@ -47,11 +47,11 @@ const MODULES = [
     {nama:"Karakter Drama", ket:"Memakai tool Character Generator", tipe:"C"},
     {nama:"Drama Video", ket:"Preset drama di Prompt Studio", tipe:"W"}]},
   {no:"07", nama:"Prompt Siap Pakai", desc:"Prompt tinggal salin",
-   guna:"Perpustakaan prompt jadi yang tinggal disalin, tanpa AI.", items:[
-    {nama:"Prompt Gambar", ket:"Perpustakaan prompt siap salin", tipe:"W"},
-    {nama:"Prompt Video", ket:"Perpustakaan prompt siap salin", tipe:"W"},
-    {nama:"Prompt Karakter", ket:"Perpustakaan prompt siap salin", tipe:"W"},
-    {nama:"Prompt Caption dan Iklan", ket:"Perpustakaan prompt siap salin", tipe:"W"}]},
+   guna:"Library prompt jadi yang tinggal disalin, tanpa AI.", items:[
+    {nama:"Prompt Gambar", ket:"Library prompt siap salin", tipe:"W"},
+    {nama:"Prompt Video", ket:"Library prompt siap salin", tipe:"W"},
+    {nama:"Prompt Karakter", ket:"Library prompt siap salin", tipe:"W"},
+    {nama:"Prompt Caption dan Iklan", ket:"Library prompt siap salin", tipe:"W"}]},
   {no:"08", nama:"Studio Content", desc:"Rakit konten sampai siap tayang",
    guna:"Perakitan akhir dari bahan jadi konten siap tayang.", items:[
     {nama:"Influencer Video", ket:"Alur terpandu karakter dan video", tipe:"C"},
