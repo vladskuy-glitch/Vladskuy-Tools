@@ -6,7 +6,8 @@ const LINKS = {
   "Text to Video": "vb-prompt-studio.html",
   "Image to Video": "vb-prompt-studio.html",
   "Character Generator": "https://share.gemini.google/idDXwFCuTDPu",
-   "UGC Video": "https://share.gemini.google/4T44kEXPsuBH", 
+   "UGC Content": "https://share.gemini.google/4T44kEXPsuBH", 
+   "Podcast Content": "https://share.gemini.google/LEC7QJgtMNmd", 
    "Video UGC & PODCAST": "https://flow.google.com/shared/tool/08a96a57-fa2f-44b6-9f25-e2c9ca271a8e",
 };
 
@@ -55,10 +56,10 @@ const MODULES = [
     {nama:"Prompt Caption dan Iklan", ket:"Library prompt siap salin", tipe:"W"}]},
   {no:"08", nama:"Studio Content", desc:"Rakit konten sampai siap tayang",
    guna:"Perakitan akhir dari bahan jadi konten siap tayang.", items:[
-    {nama:"Influencer Video", ket:"Alur terpandu karakter dan video", tipe:"C"},
-    {nama:"UGC Video", ket:"Alur video gaya UGC", tipe:"C"},
-    {nama:"Podcast Video", ket:"Alur video podcast", tipe:"C"},
-    {nama:"Finishing Konten", ket:"Checklist akhir sebelum tayang", tipe:"W"}]}
+    {nama:"Influencer Content", ket:"Alur terpandu karakter dan video", tipe:"C"},
+    {nama:"UGC Content", ket:"Alur Content UGC", tipe:"C"},
+    {nama:"Podcast Content", ket:"Alur Content Podcast", tipe:"C"},
+    {nama:"Finishing Conten", ket:"Checklist akhir sebelum tayang", tipe:"W"}]}
 ];
 
 /* Menempelkan link dari daftar LINKS ke tiap cabang */
