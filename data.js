@@ -8,7 +8,7 @@ const LINKS = {
   "Character Generator": "https://share.gemini.google/idDXwFCuTDPu",
    "UGC Content": "https://share.gemini.google/4T44kEXPsuBH", 
    "Podcast Content": "https://share.gemini.google/LEC7QJgtMNmd", 
-   "Video UGC & PODCAST": "https://flow.google.com/shared/tool/08a96a57-fa2f-44b6-9f25-e2c9ca271a8e",
+   "UGC & PODCAST": "https://flow.google.com/shared/tool/08a96a57-fa2f-44b6-9f25-e2c9ca271a8e",
 };
 
 /* ===== 2. DAFTAR MODUL (tidak perlu diubah) ===== */
@@ -30,7 +30,7 @@ const MODULES = [
     {nama:"Text to Video", ket:"VB Prompt Studio, mode teks", tipe:"W"},
     {nama:"Image to Video", ket:"VB Prompt Studio, mode gambar", tipe:"W"},
     {nama:"Motion Control", ket:"Katalog gerak kamera dan karakter", tipe:"W"},
-    {nama:"Video UGC & PODCAST", ket:"AI menyusun cerita dan storyboard dari judul", tipe:"C"}]},
+    {nama:"UGC & PODCAST", ket:"Click Here For Video Generator UGC & PODCAST", tipe:"C"}]},
   {no:"04", nama:"Modifying Character", desc:"Ubah dan atur karakter AI",
    guna:"Membuat dan mengubah karakter AI yang konsisten di semua konten.", items:[
     {nama:"Character Generator", ket:"Form karakter lengkap lalu render", tipe:"W"},
