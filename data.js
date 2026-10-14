@@ -48,8 +48,8 @@ const MODULES = [
     {nama:"Skrip Adegan", ket:"AI menulis skrip per adegan", tipe:"C"},
     {nama:"Karakter Drama", ket:"Memakai tool Character Generator", tipe:"C"},
     {nama:"Drama Video", ket:"Preset drama di Prompt Studio", tipe:"W"}]},
-  {no:"07", nama:"Prompt Siap Pakai", desc:"Prompt tinggal salin",
-   guna:"Library prompt jadi yang tinggal disalin, tanpa AI.", items:[
+  {no:"07", nama:"Prompt Library Siap Pakai", desc:"Prompt Tinggal Salin Sat Set",
+   guna:"Prompt Library Tinggal Copas, Tanpa AI.", items:[
     {nama:"Prompt Gambar", ket:"Library prompt siap salin", tipe:"W"},
     {nama:"Prompt Video", ket:"Library prompt siap salin", tipe:"W"},
     {nama:"Prompt Karakter", ket:"Library prompt siap salin", tipe:"W"},
