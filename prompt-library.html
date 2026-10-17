@@ -43,7 +43,7 @@
 <body>
 <main>
   <a class="back" href="modul.html?m=7">&lsaquo; Kembali ke modul</a>
-  <div class="mh"><small>MODUL 07</small><h1>Prompt Siap Pakai</h1><p>Isi kotak variabel, teks prompt berubah otomatis, lalu salin.</p></div>
+  <div class="mh"><small>MODUL 07</small><h1 id="h">Prompt Siap Pakai</h1><p>Isi kotak variabel, teks prompt berubah otomatis, lalu salin.</p></div>
   <input class="search" id="q" type="search" placeholder="Cari prompt (kafe, produk, caption)" aria-label="Cari prompt" autocomplete="off">
   <div class="chips" id="chips" role="group" aria-label="Kategori"></div>
   <div id="list"></div>
@@ -52,15 +52,24 @@
 <script src="prompts.js"></script>
 <script src="bg.js"></script>
 <script>
-/* KAT dan SUB ada di prompts.js */
-let cur=new URLSearchParams(location.search).get("k"),q="",jump=null;
-if(!KAT[cur])cur="all";
+/* KAT, SUB, TAHAP ada di prompts.js. Halaman terkunci ke satu cabang (?k=). */
+const P=new URLSearchParams(location.search);
+let br=P.get("k");if(!KAT[br])br="gambar";
+let col="",q="",fav=false,jump=null;
 const RE=/\[([^\]]+)\]/g;
 const split=x=>{const i=x.search(/,\s*misal:/i);return i<0?[x.trim(),""]:[x.slice(0,i).trim(),x.slice(i).replace(/^,\s*misal:\s*/i,"").trim()]};
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
 const pid=d=>d.k+":"+d.judul;
 let favs=[];try{favs=JSON.parse(localStorage.getItem("vb-fav")||"[]")}catch(e){}
 const saveFav=()=>{try{localStorage.setItem("vb-fav",JSON.stringify(favs))}catch(e){}};
+const keys=Object.keys(SUB),sub=d=>SUB[d.s]?d.s:keys[0];
+const inBr=PROMPTS.filter(d=>d.k===br),cols=keys.filter(s=>inBr.some(d=>sub(d)===s));
+col=cols[0];
+const jn=P.get("j"),tj=jn&&inBr.find(x=>x.judul===jn);
+if(tj){col=sub(tj);jump=pid(tj)}
+document.getElementById("h").textContent="Prompt "+KAT[br];
+document.title="Prompt "+KAT[br]+" | VB Vladskuy Tools";
+const sq=document.getElementById("q");
 
 function copyText(t){
   if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);
@@ -74,10 +83,10 @@ function card(d){
   for(const m of d.p.matchAll(RE)){const [l,e]=split(m[1]);if(!(l in ph)){labels.push(l);ph[l]=e}}
   const hd=el("div","hd"),st=el("button","star",favs.includes(pid(d))?"★":"☆");
   st.type="button";st.setAttribute("aria-label","Favorit");
-  st.addEventListener("click",()=>{const i=favs.indexOf(pid(d));if(i<0)favs.push(pid(d));else favs.splice(i,1);saveFav();st.textContent=i<0?"★":"☆";if(cur==="fav")draw()});
+  st.addEventListener("click",()=>{const i=favs.indexOf(pid(d));if(i<0)favs.push(pid(d));else favs.splice(i,1);saveFav();st.textContent=i<0?"★":"☆";if(fav)draw()});
   hd.append(el("h2","",d.judul),st);c.appendChild(hd);
   const meta=el("div","meta");
-  [...(cur==="all"?[KAT[d.k]]:[]),...d.tool,d.lv].forEach(x=>meta.appendChild(el("span","tag",x)));
+  [...(q||fav?[SUB[sub(d)]]:[]),...d.tool,d.lv].forEach(x=>meta.appendChild(el("span","tag",x)));
   c.appendChild(meta);
   const out=el("div","out");
   const render=()=>{out.textContent=d.p.replace(RE,(m,x)=>{const v=(vals[split(x)[0]]||"").trim();return v||m})};
@@ -93,34 +102,38 @@ function card(d){
   b.addEventListener("click",()=>copyText(out.textContent).then(()=>{b.textContent="Tersalin";setTimeout(()=>b.textContent="Salin prompt",1500)},()=>{b.textContent="Gagal, salin manual";setTimeout(()=>b.textContent="Salin prompt",2000)}));
   c.append(out,f,b);
   const t=d.next&&PROMPTS.find(x=>x.judul===d.next);
-  if(t){const n=el("button","next","Lanjut ke: "+t.judul);n.type="button";
-    n.addEventListener("click",()=>{cur="all";q="";document.getElementById("q").value="";jump=pid(t);draw()});c.appendChild(n)}
+  if(t){const n=el("button","next","Lanjut ke: "+t.judul+(t.k!==br?" ("+KAT[t.k]+")":""));n.type="button";
+    n.addEventListener("click",()=>{
+      if(t.k!==br){location.href="prompt-library.html?k="+t.k+"&j="+encodeURIComponent(t.judul);return}
+      q="";sq.value="";fav=false;col=sub(t);jump=pid(t);draw()});
+    c.appendChild(n)}
   return c;
+}
+
+function panel(title,rows,open,list){
+  if(!rows.length)return;
+  const dt=el("details","grp");
+  dt.appendChild(el("summary","",title+" ("+rows.length+")"));
+  rows.forEach(d=>dt.appendChild(card(d)));
+  dt.open=open;list.appendChild(dt);
 }
 
 function draw(){
   const list=document.getElementById("list");list.textContent="";
-  const t=q.trim().toLowerCase(),keys=Object.keys(SUB);
-  const rows=PROMPTS.filter(d=>(cur==="all"||(cur==="fav"?favs.includes(pid(d)):d.k===cur))&&(!t||(d.judul+" "+d.tool.join(" ")+" "+d.p).toLowerCase().includes(t)));
-  keys.forEach(s=>{
-    const g=rows.filter(d=>(SUB[d.s]?d.s:keys[0])===s);
-    if(!g.length)return;
-    const dt=el("details","grp");
-    dt.appendChild(el("summary","",SUB[s]+" ("+g.length+")"));
-    g.forEach(d=>dt.appendChild(card(d)));
-    dt.open=!!t||cur==="fav";
-    list.appendChild(dt);
-  });
-  if(!rows.length)list.appendChild(el("p","note",cur==="fav"&&!t?"Belum ada favorit. Tap ☆ di kartu prompt.":"Tidak ada prompt yang cocok."));
-  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===cur));
+  const t=q.trim().toLowerCase(),open=!!t||fav;
+  const rows=inBr.filter(d=>(fav?favs.includes(pid(d)):(t||sub(d)===col))&&(!t||(d.judul+" "+d.tool.join(" ")+" "+d.p).toLowerCase().includes(t)));
+  panel(fav?"Favorit":t?"Hasil pencarian":SUB[col],rows.filter(d=>!d.t),open,list);
+  TAHAP.forEach((n,i)=>panel(n,rows.filter(d=>d.t===i+1),open,list));
+  if(!rows.length)list.appendChild(el("p","note",fav&&!t?"Belum ada favorit. Tap ☆ di kartu prompt.":"Tidak ada prompt yang cocok."));
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===(fav?"fav":col)));
   if(jump){const e=list.querySelector('[data-id="'+CSS.escape(jump)+'"]');jump=null;
-    if(e){e.closest("details").open=true;e.scrollIntoView({block:"start"});e.classList.add("flash");setTimeout(()=>e.classList.remove("flash"),1800)}}
+    if(e){const dt=e.closest("details");if(dt)dt.open=true;e.scrollIntoView({block:"start"});e.classList.add("flash");setTimeout(()=>e.classList.remove("flash"),1800)}}
 }
-document.getElementById("q").addEventListener("input",e=>{q=e.target.value;draw()});
+sq.addEventListener("input",e=>{q=e.target.value;draw()});
 const chips=document.getElementById("chips");
-[["all","Semua"],["fav","★ Favorit"],...Object.entries(KAT)].forEach(([k,n])=>{
+[...cols.map(s=>[s,SUB[s]]),["fav","★ Favorit"]].forEach(([k,n])=>{
   const b=el("button","chip",n);b.type="button";b.dataset.k=k;
-  b.addEventListener("click",()=>{cur=k;history.replaceState(null,"",KAT[k]?"prompt-library.html?k="+k:"prompt-library.html");draw()});
+  b.addEventListener("click",()=>{q="";sq.value="";if(k==="fav")fav=true;else{fav=false;col=k}draw()});
   chips.appendChild(b);
 });
 draw();
