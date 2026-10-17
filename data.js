@@ -3,8 +3,8 @@
    Link kosong atau tidak ditulis = SOON. Ada link = READY.
    C = isi link share Gemini Canvas, W = nama file halaman web kita. */
 const LINKS = {
-  "Text to Video": "vb-prompt-studio.html",
-  "Image to Video": "vb-prompt-studio.html",
+  "Text to Video": "",
+  "Image to Video": "",
   "Character Generator": "https://share.gemini.google/idDXwFCuTDPu",
    "UGC Content": "https://share.gemini.google/4T44kEXPsuBH", 
    "Podcast Content": "https://share.gemini.google/LEC7QJgtMNmd", 
