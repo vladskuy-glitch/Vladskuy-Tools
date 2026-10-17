@@ -4,7 +4,8 @@
    C = isi link share Gemini Canvas, W = nama file halaman web kita. */
 const LINKS = {
   "Prompt Gambar": "prompt-library.html?k=gambar",
-  "Prompt Video": "prompt-library.html?k=video",
+  "Prompt Text to Video": "prompt-library.html?k=video-text",
+  "Prompt Image to Video": "prompt-library.html?k=video-image",
   "Prompt Karakter": "prompt-library.html?k=karakter",
   "Prompt Caption dan Iklan": "prompt-library.html?k=caption",
   "Text to Video": "",
@@ -55,7 +56,8 @@ const MODULES = [
   {no:"07", nama:"Prompt Library Siap Pakai", desc:"Prompt Tinggal Salin Sat Set",
    guna:"Prompt Library Tinggal Copas, Tanpa AI.", items:[
     {nama:"Prompt Gambar", ket:"Library prompt siap salin", tipe:"W"},
-    {nama:"Prompt Video", ket:"Library prompt siap salin", tipe:"W"},
+    {nama:"Prompt Text to Video", ket:"Library prompt siap salin", tipe:"W"},
+    {nama:"Prompt Image to Video", ket:"Library prompt siap salin", tipe:"W"},
     {nama:"Prompt Karakter", ket:"Library prompt siap salin", tipe:"W"},
     {nama:"Prompt Caption dan Iklan", ket:"Library prompt siap salin", tipe:"W"}]},
   {no:"08", nama:"Studio Content", desc:"Rakit konten sampai siap tayang",
