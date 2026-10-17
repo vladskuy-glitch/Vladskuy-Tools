@@ -31,6 +31,12 @@
 .grp[open]>summary::after{content:"\2212"}
 .grp>summary:focus-visible{outline:2px solid var(--gold2);outline-offset:-2px}
 .grp>.card{margin:0 10px 12px}
+.search{width:100%;font:inherit;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 12px}
+.search:focus-visible,.star:focus-visible,.next:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.star{font:inherit;font-size:1.3rem;line-height:1;color:var(--gold);background:none;border:0;cursor:pointer;padding:0 2px}
+.next{display:block;width:100%;margin-top:8px;font:inherit;font-size:.85rem;color:var(--gold2);background:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;text-align:left}
+.flash{box-shadow:0 0 0 2px var(--gold2)}
 @media(min-width:600px){.fields{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -38,6 +44,7 @@
 <main>
   <a class="back" href="modul.html?m=7">&lsaquo; Kembali ke modul</a>
   <div class="mh"><small>MODUL 07</small><h1>Prompt Siap Pakai</h1><p>Isi kotak variabel, teks prompt berubah otomatis, lalu salin.</p></div>
+  <input class="search" id="q" type="search" placeholder="Cari prompt (kafe, produk, caption)" aria-label="Cari prompt" autocomplete="off">
   <div class="chips" id="chips" role="group" aria-label="Kategori"></div>
   <div id="list"></div>
   <p class="note">Midjourney: tambahkan <b>--style raw</b> di akhir prompt. Flux tidak memakai negative prompt. Untuk wajah konsisten, pakai fitur referensi karakter di tool yang kamu pakai. Konten AI yang realistis sebaiknya diberi label AI saat diunggah.</p>
@@ -45,12 +52,15 @@
 <script src="prompts.js"></script>
 <script src="bg.js"></script>
 <script>
-/* KAT (daftar kategori) sekarang ada di prompts.js */
-let cur=new URLSearchParams(location.search).get("k");
+/* KAT dan SUB ada di prompts.js */
+let cur=new URLSearchParams(location.search).get("k"),q="",jump=null;
 if(!KAT[cur])cur="all";
 const RE=/\[([^\]]+)\]/g;
 const split=x=>{const i=x.search(/,\s*misal:/i);return i<0?[x.trim(),""]:[x.slice(0,i).trim(),x.slice(i).replace(/^,\s*misal:\s*/i,"").trim()]};
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const pid=d=>d.k+":"+d.judul;
+let favs=[];try{favs=JSON.parse(localStorage.getItem("vb-fav")||"[]")}catch(e){}
+const saveFav=()=>{try{localStorage.setItem("vb-fav",JSON.stringify(favs))}catch(e){}};
 
 function copyText(t){
   if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t);
@@ -60,8 +70,12 @@ function copyText(t){
 
 function card(d){
   const c=el("article","card"),vals={},labels=[],ph={};
+  c.dataset.id=pid(d);
   for(const m of d.p.matchAll(RE)){const [l,e]=split(m[1]);if(!(l in ph)){labels.push(l);ph[l]=e}}
-  c.appendChild(el("h2","",d.judul));
+  const hd=el("div","hd"),st=el("button","star",favs.includes(pid(d))?"★":"☆");
+  st.type="button";st.setAttribute("aria-label","Favorit");
+  st.addEventListener("click",()=>{const i=favs.indexOf(pid(d));if(i<0)favs.push(pid(d));else favs.splice(i,1);saveFav();st.textContent=i<0?"★":"☆";if(cur==="fav")draw()});
+  hd.append(el("h2","",d.judul),st);c.appendChild(hd);
   const meta=el("div","meta");
   [...(cur==="all"?[KAT[d.k]]:[]),...d.tool,d.lv].forEach(x=>meta.appendChild(el("span","tag",x)));
   c.appendChild(meta);
@@ -78,27 +92,35 @@ function card(d){
   const b=el("button","copy","Salin prompt");b.type="button";
   b.addEventListener("click",()=>copyText(out.textContent).then(()=>{b.textContent="Tersalin";setTimeout(()=>b.textContent="Salin prompt",1500)},()=>{b.textContent="Gagal, salin manual";setTimeout(()=>b.textContent="Salin prompt",2000)}));
   c.append(out,f,b);
+  const t=d.next&&PROMPTS.find(x=>x.judul===d.next);
+  if(t){const n=el("button","next","Lanjut ke: "+t.judul);n.type="button";
+    n.addEventListener("click",()=>{cur="all";q="";document.getElementById("q").value="";jump=pid(t);draw()});c.appendChild(n)}
   return c;
 }
 
 function draw(){
   const list=document.getElementById("list");list.textContent="";
-  const keys=Object.keys(SUB),rows=PROMPTS.filter(d=>cur==="all"||d.k===cur);
+  const t=q.trim().toLowerCase(),keys=Object.keys(SUB);
+  const rows=PROMPTS.filter(d=>(cur==="all"||(cur==="fav"?favs.includes(pid(d)):d.k===cur))&&(!t||(d.judul+" "+d.tool.join(" ")+" "+d.p).toLowerCase().includes(t)));
   keys.forEach(s=>{
     const g=rows.filter(d=>(SUB[d.s]?d.s:keys[0])===s);
     if(!g.length)return;
     const dt=el("details","grp");
     dt.appendChild(el("summary","",SUB[s]+" ("+g.length+")"));
     g.forEach(d=>dt.appendChild(card(d)));
-    if(!list.children.length)dt.open=true;
+    dt.open=!!t||cur==="fav";
     list.appendChild(dt);
   });
-  document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===cur));
+  if(!rows.length)list.appendChild(el("p","note",cur==="fav"&&!t?"Belum ada favorit. Tap ☆ di kartu prompt.":"Tidak ada prompt yang cocok."));
+  document.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x.dataset.k===cur));
+  if(jump){const e=list.querySelector('[data-id="'+CSS.escape(jump)+'"]');jump=null;
+    if(e){e.closest("details").open=true;e.scrollIntoView({block:"start"});e.classList.add("flash");setTimeout(()=>e.classList.remove("flash"),1800)}}
 }
+document.getElementById("q").addEventListener("input",e=>{q=e.target.value;draw()});
 const chips=document.getElementById("chips");
-[["all","Semua"],...Object.entries(KAT)].forEach(([k,n])=>{
+[["all","Semua"],["fav","★ Favorit"],...Object.entries(KAT)].forEach(([k,n])=>{
   const b=el("button","chip",n);b.type="button";b.dataset.k=k;
-  b.addEventListener("click",()=>{cur=k;history.replaceState(null,"",k==="all"?"prompt-library.html":"prompt-library.html?k="+k);draw()});
+  b.addEventListener("click",()=>{cur=k;history.replaceState(null,"",KAT[k]?"prompt-library.html?k="+k:"prompt-library.html");draw()});
   chips.appendChild(b);
 });
 draw();
