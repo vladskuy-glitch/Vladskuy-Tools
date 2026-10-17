@@ -24,6 +24,13 @@
 .fields input:focus-visible,.chip:focus-visible,.copy:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
 .copy{font:inherit;font-weight:600;color:#020203;background:var(--gold);border:0;border-radius:8px;padding:9px 18px;cursor:pointer}
 .note{margin:22px 0 0;font-size:.82rem;color:var(--muted);line-height:1.6}
+.grp{margin:0 0 14px;border:1px solid var(--line);border-radius:12px;background:rgba(8,8,11,.6)}
+.grp>summary{cursor:pointer;list-style:none;padding:14px;display:flex;justify-content:space-between;align-items:center;font-family:Cinzel,Georgia,serif;font-weight:700;color:var(--gold2)}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary::after{content:"+";color:var(--gold);font-size:1.3rem}
+.grp[open]>summary::after{content:"\2212"}
+.grp>summary:focus-visible{outline:2px solid var(--gold2);outline-offset:-2px}
+.grp>.card{margin:0 10px 12px}
 @media(min-width:600px){.fields{grid-template-columns:1fr 1fr}}
 </style>
 </head>
@@ -56,7 +63,7 @@ function card(d){
   for(const m of d.p.matchAll(RE)){const [l,e]=split(m[1]);if(!(l in ph)){labels.push(l);ph[l]=e}}
   c.appendChild(el("h2","",d.judul));
   const meta=el("div","meta");
-  [...d.tool,d.lv].forEach(x=>meta.appendChild(el("span","tag",x)));
+  [...(cur==="all"?[KAT[d.k]]:[]),...d.tool,d.lv].forEach(x=>meta.appendChild(el("span","tag",x)));
   c.appendChild(meta);
   const out=el("div","out");
   const render=()=>{out.textContent=d.p.replace(RE,(m,x)=>{const v=(vals[split(x)[0]]||"").trim();return v||m})};
@@ -76,7 +83,16 @@ function card(d){
 
 function draw(){
   const list=document.getElementById("list");list.textContent="";
-  PROMPTS.filter(d=>cur==="all"||d.k===cur).forEach(d=>list.appendChild(card(d)));
+  const keys=Object.keys(SUB),rows=PROMPTS.filter(d=>cur==="all"||d.k===cur);
+  keys.forEach(s=>{
+    const g=rows.filter(d=>(SUB[d.s]?d.s:keys[0])===s);
+    if(!g.length)return;
+    const dt=el("details","grp");
+    dt.appendChild(el("summary","",SUB[s]+" ("+g.length+")"));
+    g.forEach(d=>dt.appendChild(card(d)));
+    if(!list.children.length)dt.open=true;
+    list.appendChild(dt);
+  });
   document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===cur));
 }
 const chips=document.getElementById("chips");
