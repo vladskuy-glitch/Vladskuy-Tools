@@ -38,7 +38,7 @@
 <script src="prompts.js"></script>
 <script src="bg.js"></script>
 <script>
-const KAT={gambar:"Gambar",video:"Video",karakter:"Karakter",caption:"Caption dan Iklan"};
+/* KAT (daftar kategori) sekarang ada di prompts.js */
 let cur=new URLSearchParams(location.search).get("k");
 if(!KAT[cur])cur="all";
 const RE=/\[([^\]]+)\]/g;

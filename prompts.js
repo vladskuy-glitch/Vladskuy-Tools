@@ -1,4 +1,7 @@
-/* Data Prompt Siap Pakai (modul 07). Variabel ditulis [Label, misal: contoh]. Tambah prompt = tambah satu objek. */
+/* Data Prompt Siap Pakai (modul 07). Variabel ditulis [Label, misal: contoh]. Tambah prompt = tambah satu objek.
+   Kategori baru: tambah satu baris di KAT (kunci:"Nama tombol"), lalu pakai kunci yang sama di k:"..." tiap prompt.
+   Kunci yang sama juga dipakai di data.js: "prompt-library.html?k=kunci". */
+const KAT = {gambar:"Gambar", video:"Video", karakter:"Karakter", caption:"Caption dan Iklan"};
 const PROMPTS = [
 // ===== GAMBAR (realism) =====
 {k:"gambar",judul:"Candid di kafe",tool:["Midjourney","Flux"],lv:"Pemula",p:`Candid photo of [Character DNA, misal: a 23-year-old Indonesian woman, oval face, shoulder-length wavy black hair, warm tan skin, small mole under left eye], laughing naturally and looking off-camera, holding [Objek, misal: an iced latte], seated at a table in [Lokasi, misal: a semi-outdoor concrete cafe in Jakarta]. Everyday clutter on the table: phone with a sticker case, notebook, sunglasses. Shot on iPhone 15 Pro, natural window light, slight grain, visible skin pores, fine peach fuzz, flyaway hairs, no retouching, unposed.`},
